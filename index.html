@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        /* 全局样式，采用 0XDOG 的 CRT 终端风格 */
+        /* 全局样式，保留 0XDOG 的 CRT 终端风格 */
         body {
             margin: 0;
             padding: 0;
@@ -38,8 +38,8 @@
             position: fixed;
             width: 100%;
             z-index: 50;
-            padding: 20px 0;
-            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 0;
+            background: rgba(0, 0, 0, 0.9);
             border-bottom: 2px solid #00B36C;
         }
 
@@ -56,9 +56,9 @@
         }
 
         .logo-img {
-            width: 50px;
-            height: 50px;
-            filter: drop-shadow(0 0 10px #00B36C);
+            width: 40px;
+            height: 40px;
+            filter: drop-shadow(0 0 8px #00B36C);
             animation: crt-flicker 0.1s infinite;
         }
 
@@ -69,9 +69,9 @@
 
         nav a {
             color: #00B36C;
-            font-size: 1.5em;
+            font-size: 1.4em;
             text-decoration: none;
-            margin: 0 15px;
+            margin: 0 12px;
             text-shadow: 0 0 5px #00B36C;
             transition: all 0.3s;
         }
@@ -79,12 +79,13 @@
         nav a:hover {
             background: #00B36C;
             color: #000;
-            padding: 5px 10px;
+            padding: 4px 8px;
+            border-radius: 4px;
         }
 
         .menu-toggle {
             display: none;
-            font-size: 1.8em;
+            font-size: 1.6em;
             cursor: pointer;
             color: #00B36C;
         }
@@ -92,7 +93,7 @@
         #mobile-menu {
             display: none;
             background: rgba(0, 0, 0, 0.9);
-            padding: 20px;
+            padding: 15px;
             position: absolute;
             top: 100%;
             width: 100%;
@@ -101,62 +102,71 @@
         }
 
         #mobile-menu a {
-            margin: 10px 0;
-            font-size: 1.6em;
+            margin: 8px 0;
+            font-size: 1.4em;
             color: #00B36C;
         }
 
         /* 通用样式 */
         section {
-            padding: 80px 20px;
+            padding: 70px 20px;
             position: relative;
             z-index: 1;
         }
 
-        h1, h2 {
-            font-size: 2.5em;
+        h1 {
+            font-size: 2.8em;
             text-align: center;
             text-transform: uppercase;
-            text-shadow: 0 0 10px #00B36C;
-            margin-bottom: 20px;
+            text-shadow: 0 0 12px #00B36C;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        h2 {
+            font-size: 2em;
+            text-align: center;
+            text-shadow: 0 0 8px #00B36C;
+            margin-bottom: 15px;
             color: #fff;
         }
 
         p {
-            font-size: 1.3em;
-            line-height: 1.5;
+            font-size: 1.2em;
+            line-height: 1.4;
             text-align: center;
             max-width: 800px;
-            margin: 0 auto 20px;
+            margin: 0 auto 15px;
             color: #fff;
         }
 
         /* 订单簿样式 */
         .order-section {
             background: #1a1a1a;
-            padding: 20px;
-            border: 1px dotted #00B36C;
-            border-radius: 10px;
-            margin: 20px auto;
-            max-width: 800px;
+            padding: 15px;
+            border: 2px solid #00B36C;
+            border-radius: 8px;
+            margin: 15px auto;
+            max-width: 900px;
+            box-shadow: 0 0 15px rgba(0, 179, 108, 0.3);
         }
 
         .input-group {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
+            gap: 8px;
+            margin: 10px 0;
         }
 
         input, button {
             font-family: 'VT323', monospace;
-            font-size: 1.2em;
-            padding: 10px;
+            font-size: 1.1em;
+            padding: 8px;
             border: 1px solid #00B36C;
             background: #1a1a1a;
             color: #fff;
-            border-radius: 5px;
+            border-radius: 4px;
             transition: all 0.3s;
         }
 
@@ -168,7 +178,7 @@
 
         button:hover {
             background: #009955;
-            box-shadow: 0 0 10px #00B36C;
+            box-shadow: 0 0 8px #00B36C;
         }
 
         button:disabled, .loading {
@@ -179,17 +189,17 @@
 
         .custom-select {
             position: relative;
-            width: 250px;
+            width: 200px;
             margin: 5px;
         }
 
         .select-selected {
-            padding: 12px;
+            padding: 10px;
             background: #1a1a1a;
             color: #fff;
-            font-size: 1.2em;
+            font-size: 1.1em;
             border: 1px solid #00B36C;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -204,16 +214,16 @@
             background: #1a1a1a;
             width: 100%;
             border: 1px solid #00B36C;
-            border-radius: 5px;
+            border-radius: 4px;
             box-shadow: 0 0 10px rgba(0, 179, 108, 0.5);
             z-index: 99;
-            max-height: 200px;
+            max-height: 180px;
             overflow-y: auto;
             display: none;
         }
 
         .select-item {
-            padding: 10px;
+            padding: 8px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -224,9 +234,9 @@
         }
 
         .select-item img, .select-selected img, .order-item img, .order-box img {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
             object-fit: contain;
         }
 
@@ -237,16 +247,17 @@
         .percentage-buttons {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin: 10px 0;
+            gap: 8px;
+            margin: 8px 0;
         }
 
         .percentage-btn {
             background: #00B36C;
             color: #000;
-            padding: 8px 15px;
-            font-size: 1em;
-            min-width: 60px;
+            padding: 6px 12px;
+            font-size: 0.9em;
+            min-width: 50px;
+            border-radius: 4px;
         }
 
         .percentage-btn:hover {
@@ -254,84 +265,95 @@
         }
 
         .balance-info, .price-info {
-            font-size: 1.1em;
+            font-size: 1em;
             color: #00B36C;
-            margin: 10px 0;
+            margin: 8px 0;
+            text-align: center;
         }
 
         .order-list {
-            padding: 15px;
+            padding: 12px;
             background: #1a1a1a;
             border: 1px dotted #00B36C;
-            border-radius: 10px;
-            margin-top: 15px;
+            border-radius: 8px;
+            margin-top: 12px;
         }
 
         .user-order-list {
-            max-height: 300px;
+            max-height: 250px;
             overflow-y: auto;
         }
 
         .order-item {
-            margin: 8px 0;
-            padding: 10px;
+            margin: 6px 0;
+            padding: 8px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
+            border-radius: 4px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-size: 0.9em;
         }
 
         .active-order-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
         }
 
         .order-box {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
+            background: rgba(0, 179, 108, 0.1);
+            padding: 12px;
+            border: 2px solid #00B36C;
+            border-radius: 8px;
             text-align: center;
+            box-shadow: 0 0 10px rgba(0, 179, 108, 0.4);
+            transition: transform 0.3s;
+        }
+
+        .order-box:hover {
+            transform: scale(1.05);
         }
 
         .order-box span {
             display: block;
-            margin: 5px 0;
-            font-size: 0.9em;
+            margin: 4px 0;
+            font-size: 0.95em;
         }
 
         .order-box button {
-            padding: 8px 15px;
-            font-size: 1em;
-            min-width: 100px;
+            padding: 6px 12px;
+            font-size: 0.9em;
+            min-width: 90px;
+            margin-top: 8px;
         }
 
         .status {
-            font-size: 1.1em;
+            font-size: 1em;
             color: #00B36C;
             text-align: center;
-            margin: 10px 0;
+            margin: 8px 0;
         }
 
         .contract {
             background: #1a1a1a;
             padding: 10px;
-            font-size: 1.1em;
+            font-size: 1em;
             word-break: break-all;
             text-align: center;
             border: 1px dotted #00B36C;
-            margin: 20px auto;
+            margin: 15px auto;
             max-width: 600px;
             color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .contract-short {
-            font-size: 1.1em;
+            font-size: 1em;
         }
 
         .copy-button {
@@ -339,10 +361,11 @@
             align-items: center;
             gap: 5px;
             padding: 5px 10px;
-            font-size: 1em;
+            font-size: 0.9em;
             background: #1a1a1a;
             border: 1px solid #00B36C;
             color: #fff;
+            border-radius: 4px;
         }
 
         .copy-button:hover:not(:disabled) {
@@ -352,8 +375,8 @@
 
         .cursor {
             display: inline-block;
-            width: 10px;
-            height: 1.2em;
+            width: 8px;
+            height: 1.1em;
             background: #00B36C;
             animation: blink 0.7s infinite;
         }
@@ -365,11 +388,11 @@
 
         footer {
             text-align: center;
-            padding: 30px;
+            padding: 25px;
             background: #000;
             border-top: 2px solid #00B36C;
             color: #fff;
-            font-size: 1.1em;
+            font-size: 1em;
         }
 
         /* 响应式设计 */
@@ -387,12 +410,16 @@
             }
 
             h1 {
-                font-size: 2em;
+                font-size: 2.2em;
+            }
+
+            h2 {
+                font-size: 1.6em;
             }
 
             .logo-img {
-                width: 40px;
-                height: 40px;
+                width: 35px;
+                height: 35px;
             }
 
             .input-group {
@@ -401,7 +428,7 @@
 
             .custom-select, input {
                 width: 100%;
-                margin: 5px 0;
+                margin: 4px 0;
             }
 
             .active-order-grid {
@@ -424,7 +451,7 @@
 
         @media (min-width: 769px) and (max-width: 1000px) {
             .container {
-                padding: 0 30px;
+                padding: 0 25px;
             }
 
             .active-order-grid {
@@ -456,50 +483,12 @@
 
     <main>
         <!-- 订单簿部分（置顶） -->
-        <section id="orders" class="min-h-screen flex items-center justify-center" style="padding-top: 100px;">
+        <section id="orders" class="min-h-screen flex items-center justify-center" style="padding-top: 80px;">
             <div class="container">
                 <h1>Jace订单簿 - 迷因交易中心<span class="cursor"></span></h1>
-                <p>在 XLAYER 上交易代币兑换 BONE！选择代币，设置价格，创建或购买订单。</p>
+                <p>在 XLAYER 上交易代币兑换 OKB！选择代币，设置价格，创建或购买订单。</p>
 
-                <!-- 连接钱包 -->
-                <div class="order-section">
-                    <h2>连接钱包</h2>
-                    <div class="input-group">
-                        <button id="connectButton">连接 MetaMask</button>
-                    </div>
-                    <p>钱包: <span id="walletAddress">未连接</span></p>
-                    <div id="networkStatus" class="status">点击连接...</div>
-                </div>
-
-                <!-- 创建订单 -->
-                <div class="order-section">
-                    <h2>创建订单</h2>
-                    <div class="input-group">
-                        <div class="custom-select" id="tokenInSelect">
-                            <div class="select-selected"><img src="" alt="" style="display:none;">选择代币</div>
-                            <div class="select-items">
-                                <div class="select-item" data-value=""><img src="" alt="" style="display:none;">选择代币</div>
-                                <div class="select-item" data-value="0x428dC4b69A05C128966f2A03693dEAac409F1EC5"><img src="images/damn.png" alt="X0"> X0</div>
-                            </div>
-                        </div>
-                        <input type="number" id="amountInInput" placeholder="输入数量" min="0" step="any">
-                        <input type="number" id="amountBoneInput" placeholder="BONE 数量 (最少 1)" min="1" step="any">
-                    </div>
-                    <div class="balance-info" id="tokenBalance">代币余额: 0</div>
-                    <div class="percentage-buttons">
-                        <button class="percentage-btn" onclick="setPercentage(25)">25%</button>
-                        <button class="percentage-btn" onclick="setPercentage(50)">50%</button>
-                        <button class="percentage-btn" onclick="setPercentage(75)">75%</button>
-                        <button class="percentage-btn" onclick="setPercentage(100)">100%</button>
-                    </div>
-                    <div class="price-info" id="priceInfo">每代币价格: 0 BONE</div>
-                    <div class="input-group">
-                        <button id="createOrderButton">批准并创建订单</button>
-                    </div>
-                    <div class="order-list user-order-list" id="userOrders"></div>
-                </div>
-
-                <!-- 活跃订单 -->
+                <!-- 活跃订单（突出显示） -->
                 <div class="order-section">
                     <h2>活跃订单</h2>
                     <div class="input-group">
@@ -507,7 +496,7 @@
                             <div class="select-selected"><img src="" alt="" style="display:none;">选择代币</div>
                             <div class="select-items">
                                 <div class="select-item" data-value=""><img src="" alt="" style="display:none;">选择代币</div>
-                                <div class="select-item" data-value="0x428dC4b69A05C128966f2A03693dEAac409F1EC5"><img src="images/damn.png" alt="X0"> X0</div>
+                                <div class="select-item" data-value="0x428dC4b69A05C128966f2A03693dEAac409F1EC5"><img src="https://woofswap.finance/image/tokens/xo.png" alt="X0"> X0</div>
                             </div>
                         </div>
                         <button id="queryOrdersButton">查询订单</button>
@@ -516,6 +505,44 @@
                         <div class="active-order-grid"></div>
                     </div>
                 </div>
+
+                <!-- 连接钱包（紧凑） -->
+                <div class="order-section" style="max-width: 600px;">
+                    <h2>连接钱包</h2>
+                    <div class="input-group">
+                        <button id="connectButton">连接 MetaMask</button>
+                    </div>
+                    <p>钱包: <span id="walletAddress">未连接</span></p>
+                    <div id="networkStatus" class="status">点击连接...</div>
+                </div>
+
+                <!-- 创建订单（紧凑） -->
+                <div class="order-section" style="max-width: 600px;">
+                    <h2>创建订单</h2>
+                    <div class="input-group">
+                        <div class="custom-select" id="tokenInSelect">
+                            <div class="select-selected"><img src="" alt="" style="display:none;">选择代币</div>
+                            <div class="select-items">
+                                <div class="select-item" data-value=""><img src="" alt="" style="display:none;">选择代币</div>
+                                <div class="select-item" data-value="0x428dC4b69A05C128966f2A03693dEAac409F1EC5"><img src="https://woofswap.finance/image/tokens/xo.png" alt="X0"> X0</div>
+                            </div>
+                        </div>
+                        <input type="number" id="amountInInput" placeholder="输入数量" min="0" step="any">
+                        <input type="number" id="amountOKBInput" placeholder="OKB 数量 (最少 0.01)" min="0.01" step="any">
+                    </div>
+                    <div class="balance-info" id="tokenBalance">代币余额: 0</div>
+                    <div class="percentage-buttons">
+                        <button class="percentage-btn" onclick="setPercentage(25)">25%</button>
+                        <button class="percentage-btn" onclick="setPercentage(50)">50%</button>
+                        <button class="percentage-btn" onclick="setPercentage(75)">75%</button>
+                        <button class="percentage-btn" onclick="setPercentage(100)">100%</button>
+                    </div>
+                    <div class="price-info" id="priceInfo">每代币价格: 0 OKB</div>
+                    <div class="input-group">
+                        <button id="createOrderButton">批准并创建订单</button>
+                    </div>
+                    <div class="order-list user-order-list" id="userOrders"></div>
+                </div>
             </div>
         </section>
 
@@ -523,7 +550,7 @@
         <section id="about">
             <div class="container">
                 <h2>关于 Jace 订单簿</h2>
-                <p>Jace 订单簿 是 XLAYER 上的去中心化限价订单交易平台，专注于迷因币生态系统。用户可以连接 MetaMask 钱包，创建限价订单，交易代币兑换 BONE，体验区块链与迷因文化的完美结合。</p>
+                <p>Jace 订单簿 是 XLAYER 上的去中心化限价订单交易平台，专注于迷因币生态系统。用户可以连接 MetaMask 钱包，创建限价订单，交易代币兑换 OKB，体验区块链与迷因文化的完美结合。</p>
                 <div class="contract">
                     <span>合约地址: </span>
                     <span class="contract-short" data-full-address="0x1589602D79a19d15231345BcB22f0b1Ff3dC8408">0x1589...8408</span>
@@ -568,22 +595,22 @@
         const contractABI = [
             {"inputs":[],"stateMutability":"nonpayable","type":"constructor"},
             {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderId","type":"uint256"}],"name":"OrderCancelled","type":"event"},
-            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderId","type":"uint256"},{"indexed":true,"internalType":"address","name":"trader","type":"address"},{"indexed":false,"internalType":"address","name":"tokenIn","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountIn","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amountBone","type":"uint256"}],"name":"OrderCreated","type":"event"},
-            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderId","type":"uint256"},{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountIn","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amountBone","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"feeAmount","type":"uint256"}],"name":"OrderFilled","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderId","type":"uint256"},{"indexed":true,"internalType":"address","name":"trader","type":"address"},{"indexed":false,"internalType":"address","name":"tokenIn","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountIn","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amountOKB","type":"uint256"}],"name":"OrderCreated","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderId","type":"uint256"},{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountIn","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amountOKB","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"feeAmount","type":"uint256"}],"name":"OrderFilled","type":"event"},
             {"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"FeesWithdrawn","type":"event"},
             {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"token","type":"address"},{"indexed":false,"internalType":"bool","name":"isWhitelisted","type":"bool"}],"name":"TokenWhitelisted","type":"event"},
             {"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"buy","outputs":[],"stateMutability":"payable","type":"function"},
             {"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"cancelOrder","outputs":[],"stateMutability":"nonpayable","type":"function"},
-            {"inputs":[{"internalType":"address","name":"_tokenIn","type":"address"},{"internalType":"uint256","name":"_amountIn","type":"uint256"},{"internalType":"uint256","name":"_amountBone","type":"uint256"}],"name":"createOrder","outputs":[{"internalType":"uint256","name":"orderId","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"_tokenIn","type":"address"},{"internalType":"uint256","name":"_amountIn","type":"uint256"},{"internalType":"uint256","name":"_amountOKB","type":"uint256"}],"name":"createOrder","outputs":[{"internalType":"uint256","name":"orderId","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
             {"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"activeOrdersByToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
             {"inputs":[],"name":"feeBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"address","name":"_tokenIn","type":"address"},{"internalType":"uint256","name":"_page","type":"uint256"},{"internalType":"uint256","name":"_perPage","type":"uint256"}],"name":"getActiveOrders","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"trader","type":"address"},{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountBone","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"internalType":"struct WoofLimitOrder.Order[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"_tokenIn","type":"address"},{"internalType":"uint256","name":"_page","type":"uint256"},{"internalType":"uint256","name":"_perPage","type":"uint256"}],"name":"getActiveOrders","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"trader","type":"address"},{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOKB","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"internalType":"struct WoofLimitOrder.Order[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},
             {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getActiveOrderIds","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},
             {"inputs":[],"name":"getFeeBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"getOrder","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"trader","type":"address"},{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountBone","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"internalType":"struct WoofLimitOrder.Order","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"address","name":"_user","type":"address"},{"internalType":"uint256","name":"_page","type":"uint256"},{"internalType":"uint256","name":"_perPage","type":"uint256"}],"name":"getUserOrders","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"trader","type":"address"},{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountBone","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"internalType":"struct WoofLimitOrder.Order[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"getOrder","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"trader","type":"address"},{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOKB","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"internalType":"struct WoofLimitOrder.Order","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"_user","type":"address"},{"internalType":"uint256","name":"_page","type":"uint256"},{"internalType":"uint256","name":"_perPage","type":"uint256"}],"name":"getUserOrders","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"trader","type":"address"},{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOKB","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"internalType":"struct WoofLimitOrder.Order[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},
             {"inputs":[],"name":"nextOrderId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"orders","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"trader","type":"address"},{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountBone","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"orders","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"trader","type":"address"},{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOKB","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"stateMutability":"view","type":"function"},
             {"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"ordersByUser","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
             {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
             {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"whitelistedTokens","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
@@ -603,15 +630,7 @@
             blockExplorerUrls: ['https://www.okx.com/web3/explorer/xlayer']
         };
         const tokens = {
-            "0xeCe898EdCc0AF91430603175F945D8de75291c70": {symbol: "DAMN", logo: "images/damn.png", decimals: 18, priceDecimals: 8},
-            "0xe9Cb2D7ADC24Fc59FE00D6C0A0669BDF16805Fe0": {symbol: "FEED", logo: "images/feed.png", decimals: 18, priceDecimals: 12},
-            "0x8f4b11d923BbAA6206f3Dd3ff84e8e31bafB49b7": {symbol: "WOW", logo: "images/wow.png", decimals: 18, priceDecimals: 9},
-            "0x632d1FF1fB27d88EDeDB90e70bFC094D7932A0ad": {symbol: "SHIPA", logo: "images/shipa.png", decimals: 18, priceDecimals: 10},
-            "0x61CFA29261d8151D39244b8FfCf8DFd2f9DF3839": {symbol: "CHIKA", logo: "images/chika.png", decimals: 18, priceDecimals: 14},
-            "0xD0daa7B6ff1B40d3cc6F0B2Cf7E85cB993D1c834": {symbol: "WOOF", logo: "images/woof.png", decimals: 18, priceDecimals: 6},
-            "0x0b4FD6288b6d32171CC515bfFC9340026F56A358": {symbol: "PIKA", logo: "images/pika.png", decimals: 18, priceDecimals: 9},
-            "0x0cCD687CC6F8461170336D8e8cf46A39313DEab9": {symbol: "LUISA", logo: "images/luisa.png", decimals: 18, priceDecimals: 7},
-            "0xB9Ae1d4e474CC154F48e5C2f0559Eb3A78Ad1F09": {symbol: "SHIBS", logo: "images/shibs.png", decimals: 18, priceDecimals: 13}
+            "0x428dC4b69A05C128966f2A03693dEAac409F1EC5": {symbol: "X0", logo: "https://woofswap.finance/image/tokens/xo.png", decimals: 18, priceDecimals: 8}
         };
 
         // 连接钱包函数
@@ -645,6 +664,7 @@
                 contract = new web3.eth.Contract(contractABI, contractAddress);
                 status.innerText = "已连接到 X Layer";
                 await updateUserOrders();
+                await queryOrders(); // 自动加载默认代币的活跃订单
             } catch (error) {
                 console.error(error);
                 status.innerText = `连接失败: ${error.message}`;
@@ -678,7 +698,7 @@
                 const balance = parseFloat(web3.utils.fromWei(balanceWei, 'ether'));
                 let amount;
                 if (percentage === 100) {
-                    amount = balance > 1 ? (balance - 1).toFixed(3) : 0;
+                    amount = balance > 0.01 ? (balance - 0.01).toFixed(3) : 0;
                 } else {
                     amount = (balance * percentage / 100).toFixed(3);
                 }
@@ -690,12 +710,12 @@
         // 更新价格显示
         function updatePrice() {
             const amountIn = parseFloat(document.getElementById('amountInInput').value) || 0;
-            const amountBone = parseFloat(document.getElementById('amountBoneInput').value) || 0;
+            const amountOKB = parseFloat(document.getElementById('amountOKBInput').value) || 0;
             const tokenAddress = document.getElementById('tokenInSelect').getAttribute('data-value');
             const symbol = tokenAddress && tokens[tokenAddress] ? tokens[tokenAddress].symbol : '';
             const priceDecimals = tokenAddress && tokens[tokenAddress] ? tokens[tokenAddress].priceDecimals : 6;
-            const price = amountIn > 0 ? (amountBone / amountIn).toFixed(priceDecimals) : 0;
-            document.getElementById('priceInfo').innerText = `每 ${symbol} 价格: ${price} BONE`;
+            const price = amountIn > 0 ? (amountOKB / amountIn).toFixed(priceDecimals) : 0;
+            document.getElementById('priceInfo').innerText = `每 ${symbol} 价格: ${price} OKB`;
         }
 
         // 创建订单
@@ -703,16 +723,17 @@
             if (!contract || !accounts) return alert("请先连接 MetaMask！");
             const tokenIn = document.getElementById('tokenInSelect').getAttribute('data-value');
             const amountIn = document.getElementById('amountInInput').value;
-            const amountBone = document.getElementById('amountBoneInput').value;
-            if (!tokenIn || !amountIn || !amountBone || amountBone < 1) return alert("输入无效！BONE 数量至少为 1。");
+            const amountOKB = document.getElementById('amountOKBInput').value;
+            if (!tokenIn || !amountIn || !amountOKB || amountOKB < 0.01) return alert("输入无效！OKB 数量至少为 0.01。");
             const amountInWei = web3.utils.toWei(amountIn.toString(), 'ether');
-            const amountBoneWei = web3.utils.toWei(amountBone.toString(), 'ether');
+            const amountOKBWei = web3.utils.toWei(amountOKB.toString(), 'ether');
             const tokenContract = new web3.eth.Contract(erc20ABI, tokenIn);
             try {
                 await tokenContract.methods.approve(contractAddress, amountInWei).send({ from: accounts[0] });
-                await contract.methods.createOrder(tokenIn, amountInWei, amountBoneWei).send({ from: accounts[0] });
+                await contract.methods.createOrder(tokenIn, amountInWei, amountOKBWei).send({ from: accounts[0] });
                 alert("订单创建成功！");
                 await updateUserOrders();
+                await queryOrders();
             } catch (error) {
                 console.error(error);
                 alert(`创建订单失败: ${error.message}`);
@@ -720,10 +741,10 @@
         }
 
         // 购买订单
-        async function buyOrder(orderId, amountBone) {
+        async function buyOrder(orderId, amountOKB) {
             if (!contract || !accounts) return alert("请先连接 MetaMask！");
             try {
-                await contract.methods.buy(orderId).send({ from: accounts[0], value: web3.utils.toWei(amountBone.toString(), 'ether') });
+                await contract.methods.buy(orderId).send({ from: accounts[0], value: web3.utils.toWei(amountOKB.toString(), 'ether') });
                 alert("订单购买成功！");
                 await updateUserOrders();
                 await queryOrders();
@@ -740,6 +761,7 @@
                 await contract.methods.cancelOrder(orderId).send({ from: accounts[0] });
                 alert("订单取消成功！");
                 await updateUserOrders();
+                await queryOrders();
             } catch (error) {
                 console.error(error);
                 alert(`取消订单失败: ${error.message}`);
@@ -755,11 +777,11 @@
             userOrders.forEach(order => {
                 const token = tokens[order.tokenIn] || {symbol: "未知", logo: "", priceDecimals: 6};
                 const amountIn = web3.utils.fromWei(order.amountIn, 'ether');
-                const amountBone = web3.utils.fromWei(order.amountBone, 'ether');
-                const price = amountIn > 0 ? (Number(amountBone) / Number(amountIn)).toFixed(token.priceDecimals) : 0;
+                const amountOKB = web3.utils.fromWei(order.amountOKB, 'ether');
+                const price = amountIn > 0 ? (Number(amountOKB) / Number(amountIn)).toFixed(token.priceDecimals) : 0;
                 userOrdersDiv.innerHTML += `
                     <div class="order-item">
-                        <span>订单ID: ${order.id} | <img src="${token.logo}" alt="${token.symbol}"> ${token.symbol} ${parseFloat(amountIn).toFixed(3)} 兑换 ${parseFloat(amountBone).toFixed(3)} BONE | 价格: ${price} BONE/${token.symbol}</span>
+                        <span>订单ID: ${order.id} | <img src="${token.logo}" alt="${token.symbol}"> ${token.symbol} ${parseFloat(amountIn).toFixed(3)} 兑换 ${parseFloat(amountOKB).toFixed(3)} OKB | 价格: ${price} OKB/${token.symbol}</span>
                         ${order.isActive ? `<button onclick="cancelOrder('${order.id}')">取消</button>` : '<span>已完成</span>'}
                     </div>
                 `;
@@ -776,21 +798,21 @@
             }
             const activeOrdersDiv = document.getElementById('activeOrders').querySelector('.active-order-grid');
             const activeOrders = await contract.methods.getActiveOrders(tokenFilter, 0, 50).call();
-            const sortedOrders = activeOrders.filter(order => order.isActive).sort((a, b) => (a.amountBone / a.amountIn) - (b.amountBone / b.amountIn));
+            const sortedOrders = activeOrders.filter(order => order.isActive).sort((a, b) => (a.amountOKB / a.amountIn) - (b.amountOKB / b.amountIn));
             activeOrdersDiv.innerHTML = sortedOrders.length ? '' : '<p>此代币暂无活跃订单。</p>';
             sortedOrders.forEach(order => {
                 const token = tokens[order.tokenIn] || {symbol: "未知", logo: "", priceDecimals: 6};
                 const amountIn = web3.utils.fromWei(order.amountIn, 'ether');
-                const amountBone = web3.utils.fromWei(order.amountBone, 'ether');
-                const price = amountIn > 0 ? (Number(amountBone) / Number(amountIn)).toFixed(token.priceDecimals) : 0;
+                const amountOKB = web3.utils.fromWei(order.amountOKB, 'ether');
+                const price = amountIn > 0 ? (Number(amountOKB) / Number(amountIn)).toFixed(token.priceDecimals) : 0;
                 activeOrdersDiv.innerHTML += `
                     <div class="order-box">
                         <span>订单ID: ${order.id}</span>
                         <span><img src="${token.logo}" alt="${token.symbol}"> ${token.symbol}</span>
                         <span>数量: ${parseFloat(amountIn).toFixed(3)}</span>
-                        <span>BONE: ${parseFloat(amountBone).toFixed(3)}</span>
-                        <span>价格: ${price} BONE/${token.symbol}</span>
-                        <button onclick="buyOrder('${order.id}', '${amountBone}')">购买</button>
+                        <span>OKB: ${parseFloat(amountOKB).toFixed(3)}</span>
+                        <span>价格: ${price} OKB/${token.symbol}</span>
+                        <button onclick="buyOrder('${order.id}', '${amountOKB}')">购买</button>
                     </div>
                 `;
             });
@@ -841,6 +863,7 @@
                     select.setAttribute('data-value', value);
                     items.classList.remove('select-show');
                     if (selectId === 'tokenInSelect') updateBalance();
+                    if (selectId === 'tokenFilterSelect' && value) queryOrders();
                 });
             });
 
@@ -888,7 +911,7 @@
             document.getElementById('createOrderButton').addEventListener('click', createOrder);
             document.getElementById('queryOrdersButton').addEventListener('click', queryOrders);
             document.getElementById('amountInInput').addEventListener('input', updatePrice);
-            document.getElementById('amountBoneInput').addEventListener('input', updatePrice);
+            document.getElementById('amountOKBInput').addEventListener('input', updatePrice);
             document.getElementById('copyContractAddressButton').addEventListener('click', copyContractAddress);
 
             if (!window.location.protocol.startsWith('http')) {
