@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jace订单簿 - 迷因交易中心</title>
+    <link rel="icon" type="image/jpeg" href="images/0xdog.jpg">
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        /* 全局样式，采用 0XDOG 的 CRT 终端风格 */
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            font-family: 'VT323', monospace;
+            overflow-x: hidden;
+        }
+
+        /* CRT 扫描线效果 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0, 179, 108, 0.05) 1px, transparent 1px);
+            background-size: 100% 4px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* 导航栏样式 */
+        header {
+            position: fixed;
+            width: 100%;
+            z-index: 50;
+            padding: 20px 0;
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 2px solid #00B36C;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            filter: drop-shadow(0 0 10px #00B36C);
+            animation: crt-flicker 0.1s infinite;
+        }
+
+        @keyframes crt-flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.95; }
+        }
+
+        nav a {
+            color: #00B36C;
+            font-size: 1.5em;
+            text-decoration: none;
+            margin: 0 15px;
+            text-shadow: 0 0 5px #00B36C;
+            transition: all 0.3s;
+        }
+
+        nav a:hover {
+            background: #00B36C;
+            color: #000;
+            padding: 5px 10px;
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 1.8em;
+            cursor: pointer;
+            color: #00B36C;
+        }
+
+        #mobile-menu {
+            display: none;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            position: absolute;
+            top: 100%;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #mobile-menu a {
+            margin: 10px 0;
+            font-size: 1.6em;
+            color: #00B36C;
+        }
+
+        /* 通用样式 */
+        section {
+            padding: 80px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1, h2 {
+            font-size: 2.5em;
+            text-align: center;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px #00B36C;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        p {
+            font-size: 1.3em;
+            line-height: 1.5;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            color: #fff;
+        }
+
+        /* 订单簿样式 */
+        .order-section {
+            background: #1a1a1a;
+            padding: 20px;
+            border: 1px dotted #00B36C;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 800px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        input, button {
+            font-family: 'VT323', monospace;
+            font-size: 1.2em;
+            padding: 10px;
+            border: 1px solid #00B36C;
+            background: #1a1a1a;
+            color: #fff;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        button {
+            background: #00B36C;
+            color: #000;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #009955;
+            box-shadow: 0 0 10px #00B36C;
+        }
+
+        button:disabled, .loading {
+            background: #004d2e;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .custom-select {
+            position: relative;
+            width: 250px;
+            margin: 5px;
+        }
+
+        .select-selected {
+            padding: 12px;
+            background: #1a1a1a;
+            color: #fff;
+            font-size: 1.2em;
+            border: 1px solid #00B36C;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .select-selected:hover {
+            background: #2a2a2a;
+        }
+
+        .select-items {
+            position: absolute;
+            background: #1a1a1a;
+            width: 100%;
+            border: 1px solid #00B36C;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 179, 108, 0.5);
+            z-index: 99;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .select-item {
+            padding: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .select-item:hover {
+            background: #2a2a2a;
+        }
+
+        .select-item img, .select-selected img, .order-item img, .order-box img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            object-fit: contain;
+        }
+
+        .select-show {
+            display: block;
+        }
+
+        .percentage-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .percentage-btn {
+            background: #00B36C;
+            color: #000;
+            padding: 8px 15px;
+            font-size: 1em;
+            min-width: 60px;
+        }
+
+        .percentage-btn:hover {
+            background: #009955;
+        }
+
+        .balance-info, .price-info {
+            font-size: 1.1em;
+            color: #00B36C;
+            margin: 10px 0;
+        }
+
+        .order-list {
+            padding: 15px;
+            background: #1a1a1a;
+            border: 1px dotted #00B36C;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .user-order-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .order-item {
+            margin: 8px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .active-order-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .order-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .order-box span {
+            display: block;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .order-box button {
+            padding: 8px 15px;
+            font-size: 1em;
+            min-width: 100px;
+        }
+
+        .status {
+            font-size: 1.1em;
+            color: #00B36C;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .contract {
+            background: #1a1a1a;
+            padding: 10px;
+            font-size: 1.1em;
+            word-break: break-all;
+            text-align: center;
+            border: 1px dotted #00B36C;
+            margin: 20px auto;
+            max-width: 600px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .contract-short {
+            font-size: 1.1em;
+        }
+
+        .copy-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            font-size: 1em;
+            background: #1a1a1a;
+            border: 1px solid #00B36C;
+            color: #fff;
+        }
+
+        .copy-button:hover:not(:disabled) {
+            background: #009955;
+            color: #000;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background: #00B36C;
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: #000;
+            border-top: 2px solid #00B36C;
+            color: #fff;
+            font-size: 1.1em;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            nav {
+                display: none;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            #mobile-menu.active {
+                display: flex;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .logo-img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .custom-select, input {
+                width: 100%;
+                margin: 5px 0;
+            }
+
+            .active-order-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .order-box {
+                padding: 10px;
+            }
+
+            .order-box button {
+                width: 100%;
+            }
+
+            .contract {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1000px) {
+            .container {
+                padding: 0 30px;
+            }
+
+            .active-order-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header>
+        <div class="container nav-container">
+            <img src="images/0xdog.jpg" alt="Jace订单簿 Logo" class="logo-img">
+            <nav>
+                <a href="#orders">订单簿</a>
+                <a href="#about">关于</a>
+                <a href="#trade">交易</a>
+                <a href="#community">社区</a>
+            </nav>
+            <div class="menu-toggle"><i class="fa fa-bars"></i></div>
+            <div id="mobile-menu">
+                <a href="#orders">订单簿</a>
+                <a href="#about">关于</a>
+                <a href="#trade">交易</a>
+                <a href="#community">社区</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- 订单簿部分（置顶） -->
+        <section id="orders" class="min-h-screen flex items-center justify-center" style="padding-top: 100px;">
+            <div class="container">
+                <h1>Jace订单簿 - 迷因交易中心<span class="cursor"></span></h1>
+                <p>在 XLAYER 上交易代币兑换 BONE！选择代币，设置价格，创建或购买订单。</p>
+
+                <!-- 连接钱包 -->
+                <div class="order-section">
+                    <h2>连接钱包</h2>
+                    <div class="input-group">
+                        <button id="connectButton">连接 MetaMask</button>
+                    </div>
+                    <p>钱包: <span id="walletAddress">未连接</span></p>
+                    <div id="networkStatus" class="status">点击连接...</div>
+                </div>
+
+                <!-- 创建订单 -->
+                <div class="order-section">
+                    <h2>创建订单</h2>
+                    <div class="input-group">
+                        <div class="custom-select" id="tokenInSelect">
+                            <div class="select-selected"><img src="" alt="" style="display:none;">选择代币</div>
+                            <div class="select-items">
+                                <div class="select-item" data-value=""><img src="" alt="" style="display:none;">选择代币</div>
+                                <div class="select-item" data-value="0xeCe898EdCc0AF91430603175F945D8de75291c70"><img src="images/damn.png" alt="DAMN"> DAMN</div>
+                                <div class="select-item" data-value="0xe9Cb2D7ADC24Fc59FE00D6C0A0669BDF16805Fe0"><img src="images/feed.png" alt="FEED"> FEED</div>
+                                <div class="select-item" data-value="0x8f4b11d923BbAA6206f3Dd3ff84e8e31bafB49b7"><img src="images/wow.png" alt="WOW"> WOW</div>
+                                <div class="select-item" data-value="0x632d1FF1fB27d88EDeDB90e70bFC094D7932A0ad"><img src="images/shipa.png" alt="SHIPA"> SHIPA</div>
+                                <div class="select-item" data-value="0x61CFA29261d8151D39244b8FfCf8DFd2f9DF3839"><img src="images/chika.png" alt="CHIKA"> CHIKA</div>
+                                <div class="select-item" data-value="0xD0daa7B6ff1B40d3cc6F0B2Cf7E85cB993D1c834"><img src="images/woof.png" alt="WOOF"> WOOF</div>
+                                <div class="select-item" data-value="0x0b4FD6288b6d32171CC515bfFC9340026F56A358"><img src="images/pika.png" alt="PIKA"> PIKA</div>
+                                <div class="select-item" data-value="0x0cCD687CC6F8461170336D8e8cf46A39313DEab9"><img src="images/luisa.png" alt="LUISA"> LUISA</div>
+                                <div class="select-item" data-value="0xB9Ae1d4e474CC154F48e5C2f0559Eb3A78Ad1F09"><img src="images/shibs.png" alt="SHIBS"> SHIBS</div>
+                            </div>
+                        </div>
+                        <input type="number" id="amountInInput" placeholder="输入数量" min="0" step="any">
+                        <input type="number" id="amountBoneInput" placeholder="BONE 数量 (最少 1)" min="1" step="any">
+                    </div>
+                    <div class="balance-info" id="tokenBalance">代币余额: 0</div>
+                    <div class="percentage-buttons">
+                        <button class="percentage-btn" onclick="setPercentage(25)">25%</button>
+                        <button class="percentage-btn" onclick="setPercentage(50)">50%</button>
+                        <button class="percentage-btn" onclick="setPercentage(75)">75%</button>
+                        <button class="percentage-btn" onclick="setPercentage(100)">100%</button>
+                    </div>
+                    <div class="price-info" id="priceInfo">每代币价格: 0 BONE</div>
+                    <div class="input-group">
+                        <button id="createOrderButton">批准并创建订单</button>
+                    </div>
+                    <div class="order-list user-order-list" id="userOrders"></div>
+                </div>
+
+                <!-- 活跃订单 -->
+                <div class="order-section">
+                    <h2>活跃订单</h2>
+                    <div class="input-group">
+                        <div class="custom-select" id="tokenFilterSelect">
+                            <div class="select-selected"><img src="" alt="" style="display:none;">选择代币</div>
+                            <div class="select-items">
+                                <div class="select-item" data-value=""><img src="" alt="" style="display:none;">选择代币</div>
+                                <div class="select-item" data-value="0xeCe898EdCc0AF91430603175F945D8de75291c70"><img src="images/damn.png" alt="DAMN"> DAMN</div>
+                                <div class="select-item" data-value="0xe9Cb2D7ADC24Fc59FE00D6C0A0669BDF16805Fe0"><img src="images/feed.png" alt="FEED"> FEED</div>
+                                <div class="select-item" data-value="0x8f4b11d923BbAA6206f3Dd3ff84e8e31bafB49b7"><img src="images/wow.png" alt="WOW"> WOW</div>
+                                <div class="select-item" data-value="0x632d1FF1fB27d88EDeDB90e70bFC094D7932A0ad"><img src="images/shipa.png" alt="SHIPA"> SHIPA</div>
+                                <div class="select-item" data-value="0x61CFA29261d8151D39244b8FfCf8DFd2f9DF3839"><img src="images/chika.png" alt="CHIKA"> CHIKA</div>
+                                <div class="select-item" data-value="0xD0daa7B6ff1B40d3cc6F0B2Cf7E85cB993D1c834"><img src="images/woof.png" alt="WOOF"> WOOF</div>
+                                <div class="select-item" data-value="0x0b4FD6288b6d32171CC515bfFC9340026F56A358"><img src="images/pika.png" alt="PIKA"> PIKA</div>
+                                <div class="select-item" data-value="0x0cCD687CC6F8461170336D8e8cf46A39313DEab9"><img src="images/luisa.png" alt="LUISA"> LUISA</div>
+                                <div class="select-item" data-value="0xB9Ae1d4e474CC154F48e5C2f0559Eb3A78Ad1F09"><img src="images/shibs.png" alt="SHIBS"> SHIBS</div>
+                            </div>
+                        </div>
+                        <button id="queryOrdersButton">查询订单</button>
+                    </div>
+                    <div class="order-list" id="activeOrders">
+                        <div class="active-order-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关于部分 -->
+        <section id="about">
+            <div class="container">
+                <h2>关于 Jace 订单簿</h2>
+                <p>Jace 订单簿 是 XLAYER 上的去中心化限价订单交易平台，专注于迷因币生态系统。用户可以连接 MetaMask 钱包，创建限价订单，交易代币兑换 BONE，体验区块链与迷因文化的完美结合。</p>
+                <div class="contract">
+                    <span>合约地址: </span>
+                    <span class="contract-short" data-full-address="0x1589602D79a19d15231345BcB22f0b1Ff3dC8408">0x1589...8408</span>
+                    <button class="copy-button" id="copyContractAddressButton" title="复制合约地址"><i class="fa fa-copy"></i> 复制</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 交易部分 -->
+        <section id="trade">
+            <div class="container">
+                <h2>访问交易终端</h2>
+                <p>连接到 XLAYER 网络，交易你的代币。系统已上线，输入你的坐标并执行。</p>
+                <div class="links">
+                    <a href="https://x.flap.sh/0x1589602D79a19d15231345BcB22f0b1Ff3dC8408" target="_blank">在 XLAYER 上交易</a>
+                    <a href="https://aveios.com/token/0x1589602D79a19d15231345BcB22f0b1Ff3dC8408-xlayer?from=Home" target="_blank">在 AVE 上查看统计数据</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 社区部分 -->
+        <section id="community">
+            <div class="container">
+                <h2>加入社区</h2>
+                <p>与 Jace 订单簿 网络同步，关注以获取更新、迷因和系统警报。</p>
+                <div class="links">
+                    <a href="https://x.com/0XDOG_USDT0" target="_blank">X 网络</a>
+                    <a href="https://t.me/flap0xdogcto" target="_blank">Telegram 群组</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Jace订单簿. 所有系统正常。保持联系。<span class="cursor"></span></p>
+    </footer>
+
+    <script>
+        // Web3 和合约配置
+        let web3, accounts, contract;
+        const contractAddress = "0x1589602D79a19d15231345BcB22f0b1Ff3dC8408";
+        const contractABI = [
+            {"inputs":[],"stateMutability":"nonpayable","type":"constructor"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderId","type":"uint256"}],"name":"OrderCancelled","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderId","type":"uint256"},{"indexed":true,"internalType":"address","name":"trader","type":"address"},{"indexed":false,"internalType":"address","name":"tokenIn","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountIn","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amountBone","type":"uint256"}],"name":"OrderCreated","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderId","type":"uint256"},{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountIn","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amountBone","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"feeAmount","type":"uint256"}],"name":"OrderFilled","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"FeesWithdrawn","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"token","type":"address"},{"indexed":false,"internalType":"bool","name":"isWhitelisted","type":"bool"}],"name":"TokenWhitelisted","type":"event"},
+            {"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"buy","outputs":[],"stateMutability":"payable","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"cancelOrder","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"_tokenIn","type":"address"},{"internalType":"uint256","name":"_amountIn","type":"uint256"},{"internalType":"uint256","name":"_amountBone","type":"uint256"}],"name":"createOrder","outputs":[{"internalType":"uint256","name":"orderId","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"activeOrdersByToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"feeBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"_tokenIn","type":"address"},{"internalType":"uint256","name":"_page","type":"uint256"},{"internalType":"uint256","name":"_perPage","type":"uint256"}],"name":"getActiveOrders","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"trader","type":"address"},{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountBone","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"internalType":"struct WoofLimitOrder.Order[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getActiveOrderIds","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"getFeeBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"getOrder","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"trader","type":"address"},{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountBone","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"internalType":"struct WoofLimitOrder.Order","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"_user","type":"address"},{"internalType":"uint256","name":"_page","type":"uint256"},{"internalType":"uint256","name":"_perPage","type":"uint256"}],"name":"getUserOrders","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"trader","type":"address"},{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountBone","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"internalType":"struct WoofLimitOrder.Order[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"nextOrderId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"orders","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"trader","type":"address"},{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountBone","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"ordersByUser","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"whitelistedTokens","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"withdrawFees","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"_token","type":"address"},{"internalType":"bool","name":"_isWhitelisted","type":"bool"}],"name":"whitelistToken","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"stateMutability":"payable","type":"receive"}
+        ];
+        const erc20ABI = [
+            {"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"type":"function"},
+            {"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"type":"function"}
+        ];
+        const xLayer = {
+            chainId: 196,
+            chainName: 'X Layer mainnet',
+            nativeCurrency: { name: 'OKB', symbol: 'OKB', decimals: 18 },
+            rpcUrls: ['https://rpc.xlayer.tech'],
+            blockExplorerUrls: ['https://www.okx.com/web3/explorer/xlayer']
+        };
+        const tokens = {
+            "0xeCe898EdCc0AF91430603175F945D8de75291c70": {symbol: "DAMN", logo: "images/damn.png", decimals: 18, priceDecimals: 8},
+            "0xe9Cb2D7ADC24Fc59FE00D6C0A0669BDF16805Fe0": {symbol: "FEED", logo: "images/feed.png", decimals: 18, priceDecimals: 12},
+            "0x8f4b11d923BbAA6206f3Dd3ff84e8e31bafB49b7": {symbol: "WOW", logo: "images/wow.png", decimals: 18, priceDecimals: 9},
+            "0x632d1FF1fB27d88EDeDB90e70bFC094D7932A0ad": {symbol: "SHIPA", logo: "images/shipa.png", decimals: 18, priceDecimals: 10},
+            "0x61CFA29261d8151D39244b8FfCf8DFd2f9DF3839": {symbol: "CHIKA", logo: "images/chika.png", decimals: 18, priceDecimals: 14},
+            "0xD0daa7B6ff1B40d3cc6F0B2Cf7E85cB993D1c834": {symbol: "WOOF", logo: "images/woof.png", decimals: 18, priceDecimals: 6},
+            "0x0b4FD6288b6d32171CC515bfFC9340026F56A358": {symbol: "PIKA", logo: "images/pika.png", decimals: 18, priceDecimals: 9},
+            "0x0cCD687CC6F8461170336D8e8cf46A39313DEab9": {symbol: "LUISA", logo: "images/luisa.png", decimals: 18, priceDecimals: 7},
+            "0xB9Ae1d4e474CC154F48e5C2f0559Eb3A78Ad1F09": {symbol: "SHIBS", logo: "images/shibs.png", decimals: 18, priceDecimals: 13}
+        };
+
+        // 连接钱包函数
+        async function connectWallet() {
+            const status = document.getElementById('networkStatus');
+            const connectButton = document.getElementById('connectButton');
+            try {
+                if (!window.ethereum) {
+                    status.innerHTML = '未检测到钱包。请安装 <a href="https://metamask.io" target="_blank">MetaMask</a>。';
+                    throw new Error("未检测到钱包");
+                }
+                connectButton.classList.add('loading');
+                status.innerText = "正在连接...";
+                web3 = new Web3(window.ethereum);
+                accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                if (!accounts.length) throw new Error("请解锁或连接钱包。");
+                const chainId = await web3.eth.getChainId();
+                if (chainId !== 196) {
+                    try {
+                        await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0xc4' }] });
+                    } catch (switchError) {
+                        if (switchError.code === 4902) {
+                            await window.ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [xLayer]
+                            });
+                        } else throw switchError;
+                    }
+                }
+                document.getElementById('walletAddress').innerText = `${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`;
+                contract = new web3.eth.Contract(contractABI, contractAddress);
+                status.innerText = "已连接到 X Layer";
+                await updateUserOrders();
+            } catch (error) {
+                console.error(error);
+                status.innerText = `连接失败: ${error.message}`;
+            } finally {
+                connectButton.classList.remove('loading');
+            }
+        }
+
+        // 更新代币余额
+        async function updateBalance() {
+            if (!contract || !accounts) return;
+            const tokenAddress = document.getElementById('tokenInSelect').getAttribute('data-value');
+            if (tokenAddress && tokens[tokenAddress]) {
+                const tokenContract = new web3.eth.Contract(erc20ABI, tokenAddress);
+                const balanceWei = await tokenContract.methods.balanceOf(accounts[0]).call();
+                const balance = web3.utils.fromWei(balanceWei, 'ether');
+                document.getElementById('tokenBalance').innerText = `代币余额: ${parseFloat(balance).toFixed(3)} ${tokens[tokenAddress].symbol}`;
+            } else {
+                document.getElementById('tokenBalance').innerText = "代币余额: 请选择代币";
+            }
+        }
+
+        // 设置代币余额百分比
+        function setPercentage(percentage) {
+            if (!contract || !accounts) return;
+            const tokenAddress = document.getElementById('tokenInSelect').getAttribute('data-value');
+            if (!tokenAddress || !tokens[tokenAddress]) return;
+            updateBalance().then(async () => {
+                const tokenContract = new web3.eth.Contract(erc20ABI, tokenAddress);
+                const balanceWei = await tokenContract.methods.balanceOf(accounts[0]).call();
+                const balance = parseFloat(web3.utils.fromWei(balanceWei, 'ether'));
+                let amount;
+                if (percentage === 100) {
+                    amount = balance > 1 ? (balance - 1).toFixed(3) : 0;
+                } else {
+                    amount = (balance * percentage / 100).toFixed(3);
+                }
+                document.getElementById('amountInInput').value = amount;
+                updatePrice();
+            });
+        }
+
+        // 更新价格显示
+        function updatePrice() {
+            const amountIn = parseFloat(document.getElementById('amountInInput').value) || 0;
+            const amountBone = parseFloat(document.getElementById('amountBoneInput').value) || 0;
+            const tokenAddress = document.getElementById('tokenInSelect').getAttribute('data-value');
+            const symbol = tokenAddress && tokens[tokenAddress] ? tokens[tokenAddress].symbol : '';
+            const priceDecimals = tokenAddress && tokens[tokenAddress] ? tokens[tokenAddress].priceDecimals : 6;
+            const price = amountIn > 0 ? (amountBone / amountIn).toFixed(priceDecimals) : 0;
+            document.getElementById('priceInfo').innerText = `每 ${symbol} 价格: ${price} BONE`;
+        }
+
+        // 创建订单
+        async function createOrder() {
+            if (!contract || !accounts) return alert("请先连接 MetaMask！");
+            const tokenIn = document.getElementById('tokenInSelect').getAttribute('data-value');
+            const amountIn = document.getElementById('amountInInput').value;
+            const amountBone = document.getElementById('amountBoneInput').value;
+            if (!tokenIn || !amountIn || !amountBone || amountBone < 1) return alert("输入无效！BONE 数量至少为 1。");
+            const amountInWei = web3.utils.toWei(amountIn.toString(), 'ether');
+            const amountBoneWei = web3.utils.toWei(amountBone.toString(), 'ether');
+            const tokenContract = new web3.eth.Contract(erc20ABI, tokenIn);
+            try {
+                await tokenContract.methods.approve(contractAddress, amountInWei).send({ from: accounts[0] });
+                await contract.methods.createOrder(tokenIn, amountInWei, amountBoneWei).send({ from: accounts[0] });
+                alert("订单创建成功！");
+                await updateUserOrders();
+            } catch (error) {
+                console.error(error);
+                alert(`创建订单失败: ${error.message}`);
+            }
+        }
+
+        // 购买订单
+        async function buyOrder(orderId, amountBone) {
+            if (!contract || !accounts) return alert("请先连接 MetaMask！");
+            try {
+                await contract.methods.buy(orderId).send({ from: accounts[0], value: web3.utils.toWei(amountBone.toString(), 'ether') });
+                alert("订单购买成功！");
+                await updateUserOrders();
+                await queryOrders();
+            } catch (error) {
+                console.error(error);
+                alert(`购买订单失败: ${error.message}`);
+            }
+        }
+
+        // 取消订单
+        async function cancelOrder(orderId) {
+            if (!contract || !accounts) return alert("请先连接 MetaMask！");
+            try {
+                await contract.methods.cancelOrder(orderId).send({ from: accounts[0] });
+                alert("订单取消成功！");
+                await updateUserOrders();
+            } catch (error) {
+                console.error(error);
+                alert(`取消订单失败: ${error.message}`);
+            }
+        }
+
+        // 更新用户订单
+        async function updateUserOrders() {
+            if (!contract || !accounts) return;
+            const userOrdersDiv = document.getElementById('userOrders');
+            const userOrders = await contract.methods.getUserOrders(accounts[0], 0, 10).call();
+            userOrdersDiv.innerHTML = userOrders.length ? '' : '<p>暂无订单。</p>';
+            userOrders.forEach(order => {
+                const token = tokens[order.tokenIn] || {symbol: "未知", logo: "", priceDecimals: 6};
+                const amountIn = web3.utils.fromWei(order.amountIn, 'ether');
+                const amountBone = web3.utils.fromWei(order.amountBone, 'ether');
+                const price = amountIn > 0 ? (Number(amountBone) / Number(amountIn)).toFixed(token.priceDecimals) : 0;
+                userOrdersDiv.innerHTML += `
+                    <div class="order-item">
+                        <span>订单ID: ${order.id} | <img src="${token.logo}" alt="${token.symbol}"> ${token.symbol} ${parseFloat(amountIn).toFixed(3)} 兑换 ${parseFloat(amountBone).toFixed(3)} BONE | 价格: ${price} BONE/${token.symbol}</span>
+                        ${order.isActive ? `<button onclick="cancelOrder('${order.id}')">取消</button>` : '<span>已完成</span>'}
+                    </div>
+                `;
+            });
+        }
+
+        // 查询活跃订单
+        async function queryOrders() {
+            if (!contract || !accounts) return alert("请先连接 MetaMask！");
+            const tokenFilter = document.getElementById('tokenFilterSelect').getAttribute('data-value');
+            if (!tokenFilter) {
+                document.getElementById('activeOrders').querySelector('.active-order-grid').innerHTML = '<p>请选择代币以查询订单。</p>';
+                return;
+            }
+            const activeOrdersDiv = document.getElementById('activeOrders').querySelector('.active-order-grid');
+            const activeOrders = await contract.methods.getActiveOrders(tokenFilter, 0, 50).call();
+            const sortedOrders = activeOrders.filter(order => order.isActive).sort((a, b) => (a.amountBone / a.amountIn) - (b.amountBone / b.amountIn));
+            activeOrdersDiv.innerHTML = sortedOrders.length ? '' : '<p>此代币暂无活跃订单。</p>';
+            sortedOrders.forEach(order => {
+                const token = tokens[order.tokenIn] || {symbol: "未知", logo: "", priceDecimals: 6};
+                const amountIn = web3.utils.fromWei(order.amountIn, 'ether');
+                const amountBone = web3.utils.fromWei(order.amountBone, 'ether');
+                const price = amountIn > 0 ? (Number(amountBone) / Number(amountIn)).toFixed(token.priceDecimals) : 0;
+                activeOrdersDiv.innerHTML += `
+                    <div class="order-box">
+                        <span>订单ID: ${order.id}</span>
+                        <span><img src="${token.logo}" alt="${token.symbol}"> ${token.symbol}</span>
+                        <span>数量: ${parseFloat(amountIn).toFixed(3)}</span>
+                        <span>BONE: ${parseFloat(amountBone).toFixed(3)}</span>
+                        <span>价格: ${price} BONE/${token.symbol}</span>
+                        <button onclick="buyOrder('${order.id}', '${amountBone}')">购买</button>
+                    </div>
+                `;
+            });
+        }
+
+        // 复制合约地址
+        function copyContractAddress() {
+            const status = document.getElementById('networkStatus');
+            const contractAddressElement = document.querySelector('#about .contract-short');
+            const textToCopy = contractAddressElement.dataset.fullAddress;
+            const buttonElement = document.getElementById('copyContractAddressButton');
+
+            if (!textToCopy) {
+                status.textContent = "没有有效的合约地址可复制";
+                return;
+            }
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                status.textContent = "已复制到剪切板";
+                buttonElement.innerHTML = `<i class="fa fa-check"></i> 已复制!`;
+                setTimeout(() => {
+                    status.textContent = "";
+                    buttonElement.innerHTML = `<i class="fa fa-copy"></i> 复制`;
+                }, 2000);
+            }).catch(error => {
+                console.error("复制失败:", error);
+                status.textContent = "无法复制合约地址，请手动选择并复制。";
+            });
+        }
+
+        // 设置自定义选择框
+        function setupCustomSelect(selectId) {
+            const select = document.getElementById(selectId);
+            const selected = select.querySelector('.select-selected');
+            const items = select.querySelector('.select-items');
+            const options = items.querySelectorAll('.select-item');
+
+            selected.addEventListener('click', () => {
+                items.classList.toggle('select-show');
+            });
+
+            options.forEach(option => {
+                option.addEventListener('click', () => {
+                    const value = option.getAttribute('data-value');
+                    const imgSrc = option.querySelector('img').src;
+                    const text = option.textContent.trim();
+                    selected.innerHTML = `<img src="${imgSrc}" alt="${text}" ${value ? '' : 'style="display:none;"'}>${text}`;
+                    select.setAttribute('data-value', value);
+                    items.classList.remove('select-show');
+                    if (selectId === 'tokenInSelect') updateBalance();
+                });
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!select.contains(e.target)) items.classList.remove('select-show');
+            });
+        }
+
+        // 移动端菜单
+        function setupMobileMenu() {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (menuToggle && mobileMenu) {
+                menuToggle.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('active');
+                    menuToggle.innerHTML = mobileMenu.classList.contains('active') ? '<i class="fa fa-times"></i>' : '<i class="fa fa-bars"></i>';
+                });
+            }
+        }
+
+        // 平滑滚动
+        function setupSmoothScroll() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const mobileMenu = document.getElementById('mobile-menu');
+                    const menuToggle = document.querySelector('.menu-toggle');
+                    if (mobileMenu && menuToggle) {
+                        mobileMenu.classList.remove('active');
+                        menuToggle.innerHTML = '<i class="fa fa-bars"></i>';
+                    }
+                    document.querySelector(anchor.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+        }
+
+        // 初始化事件监听
+        document.addEventListener('DOMContentLoaded', () => {
+            setupCustomSelect('tokenInSelect');
+            setupCustomSelect('tokenFilterSelect');
+            setupMobileMenu();
+            setupSmoothScroll();
+
+            document.getElementById('connectButton').addEventListener('click', connectWallet);
+            document.getElementById('createOrderButton').addEventListener('click', createOrder);
+            document.getElementById('queryOrdersButton').addEventListener('click', queryOrders);
+            document.getElementById('amountInInput').addEventListener('input', updatePrice);
+            document.getElementById('amountBoneInput').addEventListener('input', updatePrice);
+            document.getElementById('copyContractAddressButton').addEventListener('click', copyContractAddress);
+
+            if (!window.location.protocol.startsWith('http')) {
+                document.getElementById('networkStatus').innerHTML = '请通过本地服务器运行此页面（例如，"npx serve"）以连接 MetaMask。';
+            } else if (!window.ethereum) {
+                document.getElementById('networkStatus').innerHTML = '未检测到钱包。请安装 <a href="https://metamask.io" target="_blank">MetaMask</a>。';
+            }
+        });
+
+        // 监听网络和账户变化
+        window.ethereum?.on('chainChanged', (chainId) => {
+            if (parseInt(chainId, 16) !== 196) {
+                document.getElementById('networkStatus').innerText = "网络错误。请重新连接到 X Layer。";
+                web3 = null; contract = null; accounts = null;
+                document.getElementById('walletAddress').innerText = "未连接";
+            } else connectWallet();
+        });
+
+        window.ethereum?.on('accountsChanged', (newAccounts) => {
+            if (newAccounts.length) connectWallet();
+            else {
+                document.getElementById('networkStatus').innerText = "钱包已断开连接。请重新连接。";
+                web3 = null; contract = null; accounts = null;
+                document.getElementById('walletAddress').innerText = "未连接";
+            }
+        });
+    </script>
+</body>
+</html>
