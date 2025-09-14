@@ -1069,9 +1069,40 @@
             }
         ];
         const erc20ABI = [
-            {"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"type":"function"},
-            {"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"type":"function"},
-            {"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"type":"function"}
+            {
+                "constant": true,
+                "inputs": [
+                    { "name": "_owner", "type": "address" },
+                    { "name": "_spender", "type": "address" }
+                ],
+                "name": "allowance",
+                "outputs": [{ "name": "", "type": "uint256" }],
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [{ "name": "_owner", "type": "address" }],
+                "name": "balanceOf",
+                "outputs": [{ "name": "balance", "type": "uint256" }],
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    { "name": "_spender", "type": "address" },
+                    { "name": "_value", "type": "uint256" }
+                ],
+                "name": "approve",
+                "outputs": [{ "name": "success", "type": "bool" }],
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "symbol",
+                "outputs": [{ "name": "", "type": "string" }],
+                "type": "function"
+            }
         ];
         const xLayer = {
             chainId: 196,
@@ -1163,7 +1194,13 @@
             const amountOKBWei = web3.utils.toWei(amountOKB.toString(), 'ether');
             const tokenContract = new web3.eth.Contract(erc20ABI, tokenAddress);
             try {
-                await tokenContract.methods.approve(contractAddress, amountInWei).send({ from: accounts[0] });
+                // 检查当前授权额度
+                const allowance = await tokenContract.methods.allowance(accounts[0], contractAddress).call();
+                if (BigInt(allowance) < BigInt(amountInWei)) {
+                    // 授权不足，调用 approve
+                    await tokenContract.methods.approve(contractAddress, amountInWei).send({ from: accounts[0] });
+                }
+                // 直接挂单
                 await contract.methods.createOrder(tokenAddress, amountInWei, amountOKBWei).send({ from: accounts[0] });
                 alert("订单创建成功！");
                 await updateUserOrders();
