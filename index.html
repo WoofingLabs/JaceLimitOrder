@@ -9,7 +9,6 @@
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        /* 全局样式，保留 0XDOG 的 CRT 终端风格 */
         body {
             margin: 0;
             padding: 0;
@@ -183,61 +182,19 @@
             opacity: 0.7;
         }
 
-        .custom-select {
-            position: relative;
-            width: 200px;
-            margin: 5px;
-        }
-
-        .select-selected {
-            padding: 10px;
-            background: #1a1a1a;
-            color: #fff;
+        .token-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 1.1em;
-            border: 1px solid #00B36C;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
+            margin-bottom: 10px;
+            color: #fff;
         }
 
-        .select-selected:hover {
-            background: #2a2a2a;
-        }
-
-        .select-items {
-            position: absolute;
-            background: #1a1a1a;
-            width: 100%;
-            border: 1px solid #00B36C;
-            border-radius: 4px;
-            box-shadow: 0 0 10px rgba(0, 179, 108, 0.5);
-            z-index: 99;
-            max-height: 180px;
-            overflow-y: auto;
-            display: none;
-        }
-
-        .select-item {
-            padding: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-        }
-
-        .select-item:hover {
-            background: #2a2a2a;
-        }
-
-        .select-item img, .select-selected img, .order-item img, .order-box img {
+        .token-info img {
             width: 18px;
             height: 18px;
             margin-right: 8px;
-            object-fit: contain;
-        }
-
-        .select-show {
-            display: block;
         }
 
         .percentage-buttons {
@@ -316,6 +273,12 @@
             display: block;
             margin: 4px 0;
             font-size: 0.95em;
+        }
+
+        .order-box img {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
         }
 
         .order-box button {
@@ -421,7 +384,7 @@
                 flex-direction: column;
             }
 
-            .custom-select, input {
+            input {
                 width: 100%;
                 margin: 4px 0;
             }
@@ -479,18 +442,14 @@
         <section id="orders" class="min-h-screen flex items-center justify-center" style="padding-top: 80px;">
             <div class="container">
                 <h1>Jace订单簿 - 迷因交易中心<span class="cursor"></span></h1>
-                <p>在 X Layer 上交易代币兑换 OKB！选择代币，设置价格，创建或购买订单。</p>
+                <p>在 X Layer 上交易 X0 兑换 OKB！设置价格，创建或购买订单。</p>
 
                 <div class="order-section">
                     <h2>活跃订单</h2>
+                    <div class="token-info">
+                        <img src="https://woofswap.finance/image/tokens/xo.png" alt="X0"> X0
+                    </div>
                     <div class="input-group">
-                        <div class="custom-select" id="tokenFilterSelect">
-                            <div class="select-selected"><img src="" alt="" style="display:none;">选择代币</div>
-                            <div class="select-items">
-                                <div class="select-item" data-value=""><img src="" alt="" style="display:none;">选择代币</div>
-                                <div class="select-item" data-value="0x428dC4b69A05C128966f2A03693dEAac409F1EC5"><img src="https://woofswap.finance/image/tokens/xo.png" alt="X0"> X0</div>
-                            </div>
-                        </div>
                         <button id="queryOrdersButton">查询订单</button>
                     </div>
                     <div class="order-list" id="activeOrders">
@@ -511,45 +470,25 @@
 
                 <div class="order-section" style="max-width: 600px;">
                     <h2>创建订单</h2>
+                    <div class="token-info">
+                        <img src="https://woofswap.finance/image/tokens/xo.png" alt="X0"> X0
+                    </div>
                     <div class="input-group">
-                        <div class="custom-select" id="tokenInSelect">
-                            <div class="select-selected"><img src="" alt="" style="display:none;">选择代币</div>
-                            <div class="select-items">
-                                <div class="select-item" data-value=""><img src="" alt="" style="display:none;">选择代币</div
-                                <div class="select-item" data-value="0x428dC4b69A05C128966f2A03693dEAac409F1EC5"><img src="https://woofswap.finance/image/tokens/xo.png" alt="X0"> X0</div>
-                            </div>
-                        </div>
-                        <input type="number" id="amountInInput" placeholder="输入数量" min="0" step="any">
+                        <input type="number" id="amountInInput" placeholder="输入 X0 数量" min="0" step="any">
                         <input type="number" id="amountOKBInput" placeholder="OKB 数量 (最少 0.01)" min="0.01" step="any">
                     </div>
-                    <div class="balance-info" id="tokenBalance">代币余额: 0</div>
+                    <div class="balance-info" id="tokenBalance">X0 余额: 0</div>
                     <div class="percentage-buttons">
                         <button class="percentage-btn" onclick="setPercentage(25)">25%</button>
                         <button class="percentage-btn" onclick="setPercentage(50)">50%</button>
                         <button class="percentage-btn" onclick="setPercentage(75)">75%</button>
                         <button class="percentage-btn" onclick="setPercentage(100)">100%</button>
                     </div>
-                    <div class="price-info" id="priceInfo">每代币价格: 0 OKB</div>
+                    <div class="price-info" id="priceInfo">每 X0 价格: 0 OKB</div>
                     <div class="input-group">
                         <button id="createOrderButton">批准并创建订单</button>
                     </div>
                     <div class="order-list user-order-list" id="userOrders"></div>
-                </div>
-            </div>
-        </section>
-
-        <section id="about">
-            <div class="container">
-                <h2>关于 Jace 订单簿</h2>
-                <p>这是一个去中心化的限价订单平台，运行在 X Layer 主网上，允许用户以指定价格交易代币兑换 OKB。</p>
-                <div class="contract">
-                    <span>合约地址: </span>
-                    <span class="contract-short" data-full-address="0xe9B1DFb78414fEf5fb7533c0B917f85ac17866F5">
-                        ${'0xe9B1DFb78414fEf5fb7533c0B917f85ac17866F5'.slice(0, 6)}...${'0xe9B1DFb78414fEf5fb7533c0B917f85ac17866F5'.slice(-4)}
-                    </span>
-                    <button id="copyContractAddressButton" class="copy-button">
-                        <i class="fa fa-copy"></i> 复制
-                    </button>
                 </div>
             </div>
         </section>
@@ -562,6 +501,8 @@
     <script>
         let web3, accounts, contract;
         const contractAddress = "0xe9B1DFb78414fEf5fb7533c0B917f85ac17866F5";
+        const tokenAddress = "0x428dC4b69A05C128966f2A03693dEAac409F1EC5";
+        const tokenInfo = { symbol: "X0", logo: "https://woofswap.finance/image/tokens/xo.png", decimals: 18, priceDecimals: 8 };
         const contractABI = [
             {
                 "inputs": [],
@@ -1139,9 +1080,6 @@
             rpcUrls: ['https://rpc.xlayer.tech'],
             blockExplorerUrls: ['https://www.okx.com/web3/explorer/xlayer']
         };
-        const knownTokens = {
-            "0x428dC4b69A05C128966f2A03693dEAac409F1EC5": {symbol: "X0", logo: "https://woofswap.finance/image/tokens/xo.png", decimals: 18, priceDecimals: 8}
-        };
 
         async function connectWallet() {
             const status = document.getElementById('networkStatus');
@@ -1172,8 +1110,8 @@
                 document.getElementById('walletAddress').innerText = `${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`;
                 contract = new web3.eth.Contract(contractABI, contractAddress);
                 status.innerText = "已连接到 X Layer";
-                await loadWhitelistedTokens();
                 await updateFeeBalance();
+                await updateBalance();
                 await updateUserOrders();
                 await queryOrders();
             } catch (error) {
@@ -1184,46 +1122,16 @@
             }
         }
 
-        async function loadWhitelistedTokens() {
-            if (!contract || !accounts) return;
-            const tokenSelect = document.getElementById('tokenInSelect').querySelector('.select-items');
-            const tokenFilterSelect = document.getElementById('tokenFilterSelect').querySelector('.select-items');
-            tokenSelect.innerHTML = '<div class="select-item" data-value=""><img src="" alt="" style="display:none;">选择代币</div>';
-            tokenFilterSelect.innerHTML = '<div class="select-item" data-value=""><img src="" alt="" style="display:none;">选择代币</div>';
-
-            for (const tokenAddress in knownTokens) {
-                const isWhitelisted = await contract.methods.whitelistedTokens(tokenAddress).call();
-                if (isWhitelisted) {
-                    const tokenContract = new web3.eth.Contract(erc20ABI, tokenAddress);
-                    const symbol = await tokenContract.methods.symbol().call().catch(() => knownTokens[tokenAddress].symbol);
-                    const token = { ...knownTokens[tokenAddress], symbol };
-                    const optionHTML = `<div class="select-item" data-value="${tokenAddress}"><img src="${token.logo}" alt="${token.symbol}"> ${token.symbol}</div>`;
-                    tokenSelect.innerHTML += optionHTML;
-                    tokenFilterSelect.innerHTML += optionHTML;
-                }
-            }
-
-            setupCustomSelect('tokenInSelect');
-            setupCustomSelect('tokenFilterSelect');
-        }
-
         async function updateBalance() {
             if (!contract || !accounts) return;
-            const tokenAddress = document.getElementById('tokenInSelect').getAttribute('data-value');
-            if (tokenAddress && knownTokens[tokenAddress]) {
-                const tokenContract = new web3.eth.Contract(erc20ABI, tokenAddress);
-                const balanceWei = await tokenContract.methods.balanceOf(accounts[0]).call();
-                const balance = web3.utils.fromWei(balanceWei, 'ether');
-                document.getElementById('tokenBalance').innerText = `代币余额: ${parseFloat(balance).toFixed(3)} ${knownTokens[tokenAddress].symbol}`;
-            } else {
-                document.getElementById('tokenBalance').innerText = "代币余额: 请选择代币";
-            }
+            const tokenContract = new web3.eth.Contract(erc20ABI, tokenAddress);
+            const balanceWei = await tokenContract.methods.balanceOf(accounts[0]).call();
+            const balance = web3.utils.fromWei(balanceWei, 'ether');
+            document.getElementById('tokenBalance').innerText = `X0 余额: ${parseFloat(balance).toFixed(3)} X0`;
         }
 
         function setPercentage(percentage) {
             if (!contract || !accounts) return;
-            const tokenAddress = document.getElementById('tokenInSelect').getAttribute('data-value');
-            if (!tokenAddress || !knownTokens[tokenAddress]) return;
             updateBalance().then(async () => {
                 const tokenContract = new web3.eth.Contract(erc20ABI, tokenAddress);
                 const balanceWei = await tokenContract.methods.balanceOf(accounts[0]).call();
@@ -1242,25 +1150,21 @@
         function updatePrice() {
             const amountIn = parseFloat(document.getElementById('amountInInput').value) || 0;
             const amountOKB = parseFloat(document.getElementById('amountOKBInput').value) || 0;
-            const tokenAddress = document.getElementById('tokenInSelect').getAttribute('data-value');
-            const symbol = tokenAddress && knownTokens[tokenAddress] ? knownTokens[tokenAddress].symbol : '';
-            const priceDecimals = tokenAddress && knownTokens[tokenAddress] ? knownTokens[tokenAddress].priceDecimals : 6;
-            const price = amountIn > 0 ? (amountOKB / amountIn).toFixed(priceDecimals) : 0;
-            document.getElementById('priceInfo').innerText = `每 ${symbol} 价格: ${price} OKB`;
+            const price = amountIn > 0 ? (amountOKB / amountIn).toFixed(tokenInfo.priceDecimals) : 0;
+            document.getElementById('priceInfo').innerText = `每 X0 价格: ${price} OKB`;
         }
 
         async function createOrder() {
             if (!contract || !accounts) return alert("请先连接 MetaMask！");
-            const tokenIn = document.getElementById('tokenInSelect').getAttribute('data-value');
             const amountIn = document.getElementById('amountInInput').value;
             const amountOKB = document.getElementById('amountOKBInput').value;
-            if (!tokenIn || !amountIn || !amountOKB || amountOKB < 0.01) return alert("输入无效！OKB 数量至少为 0.01。");
+            if (!amountIn || !amountOKB || amountOKB < 0.01) return alert("输入无效！OKB 数量至少为 0.01。");
             const amountInWei = web3.utils.toWei(amountIn.toString(), 'ether');
             const amountOKBWei = web3.utils.toWei(amountOKB.toString(), 'ether');
-            const tokenContract = new web3.eth.Contract(erc20ABI, tokenIn);
+            const tokenContract = new web3.eth.Contract(erc20ABI, tokenAddress);
             try {
                 await tokenContract.methods.approve(contractAddress, amountInWei).send({ from: accounts[0] });
-                await contract.methods.createOrder(tokenIn, amountInWei, amountOKBWei).send({ from: accounts[0] });
+                await contract.methods.createOrder(tokenAddress, amountInWei, amountOKBWei).send({ from: accounts[0] });
                 alert("订单创建成功！");
                 await updateUserOrders();
                 await queryOrders();
@@ -1324,13 +1228,12 @@
             const userOrders = await contract.methods.getUserOrders(accounts[0], 0, 10).call();
             userOrdersDiv.innerHTML = userOrders.length ? '' : '<p>暂无订单。</p>';
             userOrders.forEach(order => {
-                const token = knownTokens[order.tokenIn] || {symbol: "未知", logo: "", priceDecimals: 6};
                 const amountIn = web3.utils.fromWei(order.amountIn, 'ether');
                 const amountOKB = web3.utils.fromWei(order.amountOKB, 'ether');
-                const price = amountIn > 0 ? (Number(amountOKB) / Number(amountIn)).toFixed(token.priceDecimals) : 0;
+                const price = amountIn > 0 ? (Number(amountOKB) / Number(amountIn)).toFixed(tokenInfo.priceDecimals) : 0;
                 userOrdersDiv.innerHTML += `
                     <div class="order-item">
-                        <span>订单ID: ${order.id} | <img src="${token.logo}" alt="${token.symbol}"> ${token.symbol} ${parseFloat(amountIn).toFixed(3)} 兑换 ${parseFloat(amountOKB).toFixed(3)} OKB | 价格: ${price} OKB/${token.symbol}</span>
+                        <span>订单ID: ${order.id} | <img src="${tokenInfo.logo}" alt="${tokenInfo.symbol}"> ${tokenInfo.symbol} ${parseFloat(amountIn).toFixed(3)} 兑换 ${parseFloat(amountOKB).toFixed(3)} OKB | 价格: ${price} OKB/${tokenInfo.symbol}</span>
                         ${order.isActive ? `<button onclick="cancelOrder('${order.id}')">取消</button>` : '<span>已完成</span>'}
                     </div>
                 `;
@@ -1339,26 +1242,20 @@
 
         async function queryOrders() {
             if (!contract || !accounts) return alert("请先连接 MetaMask！");
-            const tokenFilter = document.getElementById('tokenFilterSelect').getAttribute('data-value');
-            if (!tokenFilter) {
-                document.getElementById('activeOrders').querySelector('.active-order-grid').innerHTML = '<p>请选择代币以查询订单。</p>';
-                return;
-            }
             const activeOrdersDiv = document.getElementById('activeOrders').querySelector('.active-order-grid');
-            const activeOrders = await contract.methods.getActiveOrders(tokenFilter, 0, 50).call();
-            activeOrdersDiv.innerHTML = activeOrders.length ? '' : '<p>此代币暂无活跃订单。</p>';
+            const activeOrders = await contract.methods.getActiveOrders(tokenAddress, 0, 50).call();
+            activeOrdersDiv.innerHTML = activeOrders.length ? '' : '<p>暂无活跃订单。</p>';
             activeOrders.forEach(order => {
-                const token = knownTokens[order.tokenIn] || {symbol: "未知", logo: "", priceDecimals: 6};
                 const amountIn = web3.utils.fromWei(order.amountIn, 'ether');
                 const amountOKB = web3.utils.fromWei(order.amountOKB, 'ether');
-                const price = amountIn > 0 ? (Number(amountOKB) / Number(amountIn)).toFixed(token.priceDecimals) : 0;
+                const price = amountIn > 0 ? (Number(amountOKB) / Number(amountIn)).toFixed(tokenInfo.priceDecimals) : 0;
                 activeOrdersDiv.innerHTML += `
                     <div class="order-box">
                         <span>订单ID: ${order.id}</span>
-                        <span><img src="${token.logo}" alt="${token.symbol}"> ${token.symbol}</span>
+                        <span><img src="${tokenInfo.logo}" alt="${tokenInfo.symbol}"> ${tokenInfo.symbol}</span>
                         <span>数量: ${parseFloat(amountIn).toFixed(3)}</span>
                         <span>OKB: ${parseFloat(amountOKB).toFixed(3)}</span>
-                        <span>价格: ${price} OKB/${token.symbol}</span>
+                        <span>价格: ${price} OKB/${tokenInfo.symbol}</span>
                         <button onclick="buyOrder('${order.id}', '${amountOKB}')">购买</button>
                     </div>
                 `;
@@ -1389,34 +1286,6 @@
             });
         }
 
-        function setupCustomSelect(selectId) {
-            const select = document.getElementById(selectId);
-            const selected = select.querySelector('.select-selected');
-            const items = select.querySelector('.select-items');
-            const options = items.querySelectorAll('.select-item');
-
-            selected.addEventListener('click', () => {
-                items.classList.toggle('select-show');
-            });
-
-            options.forEach(option => {
-                option.addEventListener('click', () => {
-                    const value = option.getAttribute('data-value');
-                    const imgSrc = option.querySelector('img').src;
-                    const text = option.textContent.trim();
-                    selected.innerHTML = `<img src="${imgSrc}" alt="${text}" ${value ? '' : 'style="display:none;"'}>${text}`;
-                    select.setAttribute('data-value', value);
-                    items.classList.remove('select-show');
-                    if (selectId === 'tokenInSelect') updateBalance();
-                    if (selectId === 'tokenFilterSelect' && value) queryOrders();
-                });
-            });
-
-            document.addEventListener('click', (e) => {
-                if (!select.contains(e.target)) items.classList.remove('select-show');
-            });
-        }
-
         function setupMobileMenu() {
             const menuToggle = document.querySelector('.menu-toggle');
             const mobileMenu = document.getElementById('mobile-menu');
@@ -1444,8 +1313,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            setupCustomSelect('tokenInSelect');
-            setupCustomSelect('tokenFilterSelect');
             setupMobileMenu();
             setupSmoothScroll();
 
