@@ -19,7 +19,6 @@
             overflow-x: hidden;
         }
 
-        /* CRT 扫描线效果 */
         body::before {
             content: '';
             position: fixed;
@@ -33,7 +32,6 @@
             pointer-events: none;
         }
 
-        /* 导航栏样式 */
         header {
             position: fixed;
             width: 100%;
@@ -107,7 +105,6 @@
             color: #00B36C;
         }
 
-        /* 通用样式 */
         section {
             padding: 70px 20px;
             position: relative;
@@ -140,7 +137,6 @@
             color: #fff;
         }
 
-        /* 订单簿样式 */
         .order-section {
             background: #1a1a1a;
             padding: 15px;
@@ -395,7 +391,6 @@
             font-size: 1em;
         }
 
-        /* 响应式设计 */
         @media (max-width: 768px) {
             nav {
                 display: none;
@@ -461,7 +456,6 @@
     </style>
 </head>
 <body>
-    <!-- 导航栏 -->
     <header>
         <div class="container nav-container">
             <img src="https://woofswap.finance/image/tokens/jace.png" alt="Jace订单簿 Logo" class="logo-img">
@@ -482,13 +476,11 @@
     </header>
 
     <main>
-        <!-- 订单簿部分（置顶） -->
         <section id="orders" class="min-h-screen flex items-center justify-center" style="padding-top: 80px;">
             <div class="container">
                 <h1>Jace订单簿 - 迷因交易中心<span class="cursor"></span></h1>
-                <p>在 XLAYER 上交易代币兑换 OKB！选择代币，设置价格，创建或购买订单。</p>
+                <p>在 X Layer 上交易代币兑换 OKB！选择代币，设置价格，创建或购买订单。</p>
 
-                <!-- 活跃订单（突出显示） -->
                 <div class="order-section">
                     <h2>活跃订单</h2>
                     <div class="input-group">
@@ -496,7 +488,6 @@
                             <div class="select-selected"><img src="" alt="" style="display:none;">选择代币</div>
                             <div class="select-items">
                                 <div class="select-item" data-value=""><img src="" alt="" style="display:none;">选择代币</div>
-                                <div class="select-item" data-value="0x428dC4b69A05C128966f2A03693dEAac409F1EC5"><img src="https://woofswap.finance/image/tokens/xo.png" alt="X0"> X0</div>
                             </div>
                         </div>
                         <button id="queryOrdersButton">查询订单</button>
@@ -506,17 +497,17 @@
                     </div>
                 </div>
 
-                <!-- 连接钱包（紧凑） -->
                 <div class="order-section" style="max-width: 600px;">
                     <h2>连接钱包</h2>
                     <div class="input-group">
                         <button id="connectButton">连接 MetaMask</button>
+                        <button id="withdrawFeesButton" style="display:none;">提取手续费</button>
                     </div>
                     <p>钱包: <span id="walletAddress">未连接</span></p>
+                    <p>手续费余额: <span id="feeBalance">0 OKB</span></p>
                     <div id="networkStatus" class="status">点击连接...</div>
                 </div>
 
-                <!-- 创建订单（紧凑） -->
                 <div class="order-section" style="max-width: 600px;">
                     <h2>创建订单</h2>
                     <div class="input-group">
@@ -524,7 +515,6 @@
                             <div class="select-selected"><img src="" alt="" style="display:none;">选择代币</div>
                             <div class="select-items">
                                 <div class="select-item" data-value=""><img src="" alt="" style="display:none;">选择代币</div>
-                                <div class="select-item" data-value="0x428dC4b69A05C128966f2A03693dEAac409F1EC5"><img src="https://woofswap.finance/image/tokens/xo.png" alt="X0"> X0</div>
                             </div>
                         </div>
                         <input type="number" id="amountInInput" placeholder="输入数量" min="0" step="any">
@@ -545,6 +535,22 @@
                 </div>
             </div>
         </section>
+
+        <section id="about">
+            <div class="container">
+                <h2>关于 Jace 订单簿</h2>
+                <p>这是一个去中心化的限价订单平台，运行在 X Layer 主网上，允许用户以指定价格交易代币兑换 OKB。</p>
+                <div class="contract">
+                    <span>合约地址: </span>
+                    <span class="contract-short" data-full-address="0xe9B1DFb78414fEf5fb7533c0B917f85ac17866F5">
+                        ${'0xe9B1DFb78414fEf5fb7533c0B917f85ac17866F5'.slice(0, 6)}...${'0xe9B1DFb78414fEf5fb7533c0B917f85ac17866F5'.slice(-4)}
+                    </span>
+                    <button id="copyContractAddressButton" class="copy-button">
+                        <i class="fa fa-copy"></i> 复制
+                    </button>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer>
@@ -552,38 +558,577 @@
     </footer>
 
     <script>
-        // Web3 和合约配置
         let web3, accounts, contract;
-        const contractAddress = "0x1589602D79a19d15231345BcB22f0b1Ff3dC8408";
+        const contractAddress = "0xe9B1DFb78414fEf5fb7533c0B917f85ac17866F5";
         const contractABI = [
-            {"inputs":[],"stateMutability":"nonpayable","type":"constructor"},
-            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderId","type":"uint256"}],"name":"OrderCancelled","type":"event"},
-            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderId","type":"uint256"},{"indexed":true,"internalType":"address","name":"trader","type":"address"},{"indexed":false,"internalType":"address","name":"tokenIn","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountIn","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amountOKB","type":"uint256"}],"name":"OrderCreated","type":"event"},
-            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderId","type":"uint256"},{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountIn","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amountOKB","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"feeAmount","type":"uint256"}],"name":"OrderFilled","type":"event"},
-            {"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"FeesWithdrawn","type":"event"},
-            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"token","type":"address"},{"indexed":false,"internalType":"bool","name":"isWhitelisted","type":"bool"}],"name":"TokenWhitelisted","type":"event"},
-            {"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"buy","outputs":[],"stateMutability":"payable","type":"function"},
-            {"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"cancelOrder","outputs":[],"stateMutability":"nonpayable","type":"function"},
-            {"inputs":[{"internalType":"address","name":"_tokenIn","type":"address"},{"internalType":"uint256","name":"_amountIn","type":"uint256"},{"internalType":"uint256","name":"_amountOKB","type":"uint256"}],"name":"createOrder","outputs":[{"internalType":"uint256","name":"orderId","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
-            {"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"activeOrdersByToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-            {"inputs":[],"name":"feeBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"address","name":"_tokenIn","type":"address"},{"internalType":"uint256","name":"_page","type":"uint256"},{"internalType":"uint256","name":"_perPage","type":"uint256"}],"name":"getActiveOrders","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"trader","type":"address"},{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOKB","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"internalType":"struct WoofLimitOrder.Order[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getActiveOrderIds","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},
-            {"inputs":[],"name":"getFeeBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"getOrder","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"trader","type":"address"},{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOKB","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"internalType":"struct WoofLimitOrder.Order","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"address","name":"_user","type":"address"},{"internalType":"uint256","name":"_page","type":"uint256"},{"internalType":"uint256","name":"_perPage","type":"uint256"}],"name":"getUserOrders","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"trader","type":"address"},{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOKB","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"internalType":"struct WoofLimitOrder.Order[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},
-            {"inputs":[],"name":"nextOrderId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"orders","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"trader","type":"address"},{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOKB","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"ordersByUser","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-            {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"whitelistedTokens","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-            {"inputs":[],"name":"withdrawFees","outputs":[],"stateMutability":"nonpayable","type":"function"},
-            {"inputs":[{"internalType":"address","name":"_token","type":"address"},{"internalType":"bool","name":"_isWhitelisted","type":"bool"}],"name":"whitelistToken","outputs":[],"stateMutability":"nonpayable","type":"function"},
-            {"stateMutability":"payable","type":"receive"}
+            {
+                "inputs": [],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "uint256",
+                        "name": "orderId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "OrderCancelled",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "uint256",
+                        "name": "orderId",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "trader",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "tokenIn",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amountIn",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amountOKB",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "OrderCreated",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "uint256",
+                        "name": "orderId",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "buyer",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amountIn",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amountOKB",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "feeAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "OrderFilled",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "FeesWithdrawn",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "bool",
+                        "name": "isWhitelisted",
+                        "type": "bool"
+                    }
+                ],
+                "name": "TokenWhitelisted",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_orderId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "buy",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_orderId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "cancelOrder",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_tokenIn",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "_amountIn",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "_amountOKB",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "createOrder",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "orderId",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "activeOrdersByToken",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "feeBalance",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_tokenIn",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "_page",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "_perPage",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getActiveOrders",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint256",
+                                "name": "id",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "trader",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "tokenIn",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "amountIn",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "amountOKB",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct JaceLimitOrder.Order[]",
+                        "name": "",
+                        "type": "tuple[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_user",
+                        "type": "address"
+                    }
+                ],
+                "name": "getActiveOrderIds",
+                "outputs": [
+                    {
+                        "internalType": "uint256[]",
+                        "name": "",
+                        "type": "uint256[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getFeeBalance",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_orderId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getOrder",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint256",
+                                "name": "id",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "trader",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "tokenIn",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "amountIn",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "amountOKB",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct JaceLimitOrder.Order",
+                        "name": "",
+                        "type": "tuple"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_user",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "_page",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "_perPage",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getUserOrders",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint256",
+                                "name": "id",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "trader",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "tokenIn",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "amountIn",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "amountOKB",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct JaceLimitOrder.Order[]",
+                        "name": "",
+                        "type": "tuple[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "nextOrderId",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "orders",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "id",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "trader",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "tokenIn",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amountIn",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amountOKB",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "isActive",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "ordersByUser",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "whitelistedTokens",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "withdrawFees",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_token",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "_isWhitelisted",
+                        "type": "bool"
+                    }
+                ],
+                "name": "whitelistToken",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "stateMutability": "payable",
+                "type": "receive"
+            }
         ];
         const erc20ABI = [
             {"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"type":"function"},
-            {"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"type":"function"}
+            {"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"type":"function"},
+            {"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"type":"function"}
         ];
         const xLayer = {
             chainId: 196,
@@ -592,11 +1137,10 @@
             rpcUrls: ['https://rpc.xlayer.tech'],
             blockExplorerUrls: ['https://www.okx.com/web3/explorer/xlayer']
         };
-        const tokens = {
+        const knownTokens = {
             "0x428dC4b69A05C128966f2A03693dEAac409F1EC5": {symbol: "X0", logo: "https://woofswap.finance/image/tokens/xo.png", decimals: 18, priceDecimals: 8}
         };
 
-        // 连接钱包函数
         async function connectWallet() {
             const status = document.getElementById('networkStatus');
             const connectButton = document.getElementById('connectButton');
@@ -626,8 +1170,10 @@
                 document.getElementById('walletAddress').innerText = `${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`;
                 contract = new web3.eth.Contract(contractABI, contractAddress);
                 status.innerText = "已连接到 X Layer";
+                await loadWhitelistedTokens();
+                await updateFeeBalance();
                 await updateUserOrders();
-                await queryOrders(); // 自动加载默认代币的活跃订单
+                await queryOrders();
             } catch (error) {
                 console.error(error);
                 status.innerText = `连接失败: ${error.message}`;
@@ -636,25 +1182,46 @@
             }
         }
 
-        // 更新代币余额
+        async function loadWhitelistedTokens() {
+            if (!contract || !accounts) return;
+            const tokenSelect = document.getElementById('tokenInSelect').querySelector('.select-items');
+            const tokenFilterSelect = document.getElementById('tokenFilterSelect').querySelector('.select-items');
+            tokenSelect.innerHTML = '<div class="select-item" data-value=""><img src="" alt="" style="display:none;">选择代币</div>';
+            tokenFilterSelect.innerHTML = '<div class="select-item" data-value=""><img src="" alt="" style="display:none;">选择代币</div>';
+
+            for (const tokenAddress in knownTokens) {
+                const isWhitelisted = await contract.methods.whitelistedTokens(tokenAddress).call();
+                if (isWhitelisted) {
+                    const tokenContract = new web3.eth.Contract(erc20ABI, tokenAddress);
+                    const symbol = await tokenContract.methods.symbol().call().catch(() => knownTokens[tokenAddress].symbol);
+                    const token = { ...knownTokens[tokenAddress], symbol };
+                    const optionHTML = `<div class="select-item" data-value="${tokenAddress}"><img src="${token.logo}" alt="${token.symbol}"> ${token.symbol}</div>`;
+                    tokenSelect.innerHTML += optionHTML;
+                    tokenFilterSelect.innerHTML += optionHTML;
+                }
+            }
+
+            setupCustomSelect('tokenInSelect');
+            setupCustomSelect('tokenFilterSelect');
+        }
+
         async function updateBalance() {
             if (!contract || !accounts) return;
             const tokenAddress = document.getElementById('tokenInSelect').getAttribute('data-value');
-            if (tokenAddress && tokens[tokenAddress]) {
+            if (tokenAddress && knownTokens[tokenAddress]) {
                 const tokenContract = new web3.eth.Contract(erc20ABI, tokenAddress);
                 const balanceWei = await tokenContract.methods.balanceOf(accounts[0]).call();
                 const balance = web3.utils.fromWei(balanceWei, 'ether');
-                document.getElementById('tokenBalance').innerText = `代币余额: ${parseFloat(balance).toFixed(3)} ${tokens[tokenAddress].symbol}`;
+                document.getElementById('tokenBalance').innerText = `代币余额: ${parseFloat(balance).toFixed(3)} ${knownTokens[tokenAddress].symbol}`;
             } else {
                 document.getElementById('tokenBalance').innerText = "代币余额: 请选择代币";
             }
         }
 
-        // 设置代币余额百分比
         function setPercentage(percentage) {
             if (!contract || !accounts) return;
             const tokenAddress = document.getElementById('tokenInSelect').getAttribute('data-value');
-            if (!tokenAddress || !tokens[tokenAddress]) return;
+            if (!tokenAddress || !knownTokens[tokenAddress]) return;
             updateBalance().then(async () => {
                 const tokenContract = new web3.eth.Contract(erc20ABI, tokenAddress);
                 const balanceWei = await tokenContract.methods.balanceOf(accounts[0]).call();
@@ -670,18 +1237,16 @@
             });
         }
 
-        // 更新价格显示
         function updatePrice() {
             const amountIn = parseFloat(document.getElementById('amountInInput').value) || 0;
             const amountOKB = parseFloat(document.getElementById('amountOKBInput').value) || 0;
             const tokenAddress = document.getElementById('tokenInSelect').getAttribute('data-value');
-            const symbol = tokenAddress && tokens[tokenAddress] ? tokens[tokenAddress].symbol : '';
-            const priceDecimals = tokenAddress && tokens[tokenAddress] ? tokens[tokenAddress].priceDecimals : 6;
+            const symbol = tokenAddress && knownTokens[tokenAddress] ? knownTokens[tokenAddress].symbol : '';
+            const priceDecimals = tokenAddress && knownTokens[tokenAddress] ? knownTokens[tokenAddress].priceDecimals : 6;
             const price = amountIn > 0 ? (amountOKB / amountIn).toFixed(priceDecimals) : 0;
             document.getElementById('priceInfo').innerText = `每 ${symbol} 价格: ${price} OKB`;
         }
 
-        // 创建订单
         async function createOrder() {
             if (!contract || !accounts) return alert("请先连接 MetaMask！");
             const tokenIn = document.getElementById('tokenInSelect').getAttribute('data-value');
@@ -703,7 +1268,6 @@
             }
         }
 
-        // 购买订单
         async function buyOrder(orderId, amountOKB) {
             if (!contract || !accounts) return alert("请先连接 MetaMask！");
             try {
@@ -717,7 +1281,6 @@
             }
         }
 
-        // 取消订单
         async function cancelOrder(orderId) {
             if (!contract || !accounts) return alert("请先连接 MetaMask！");
             try {
@@ -731,14 +1294,35 @@
             }
         }
 
-        // 更新用户订单
+        async function updateFeeBalance() {
+            if (!contract || !accounts) return;
+            const owner = await contract.methods.owner().call();
+            const isOwner = accounts[0].toLowerCase() === owner.toLowerCase();
+            document.getElementById('withdrawFeesButton').style.display = isOwner ? 'inline-block' : 'none';
+            const feeBalanceWei = await contract.methods.getFeeBalance().call();
+            const feeBalance = web3.utils.fromWei(feeBalanceWei, 'ether');
+            document.getElementById('feeBalance').innerText = `${parseFloat(feeBalance).toFixed(3)} OKB`;
+        }
+
+        async function withdrawFees() {
+            if (!contract || !accounts) return alert("请先连接 MetaMask！");
+            try {
+                await contract.methods.withdrawFees().send({ from: accounts[0] });
+                alert("手续费提取成功！");
+                await updateFeeBalance();
+            } catch (error) {
+                console.error(error);
+                alert(`提取手续费失败: ${error.message}`);
+            }
+        }
+
         async function updateUserOrders() {
             if (!contract || !accounts) return;
             const userOrdersDiv = document.getElementById('userOrders');
             const userOrders = await contract.methods.getUserOrders(accounts[0], 0, 10).call();
             userOrdersDiv.innerHTML = userOrders.length ? '' : '<p>暂无订单。</p>';
             userOrders.forEach(order => {
-                const token = tokens[order.tokenIn] || {symbol: "未知", logo: "", priceDecimals: 6};
+                const token = knownTokens[order.tokenIn] || {symbol: "未知", logo: "", priceDecimals: 6};
                 const amountIn = web3.utils.fromWei(order.amountIn, 'ether');
                 const amountOKB = web3.utils.fromWei(order.amountOKB, 'ether');
                 const price = amountIn > 0 ? (Number(amountOKB) / Number(amountIn)).toFixed(token.priceDecimals) : 0;
@@ -751,7 +1335,6 @@
             });
         }
 
-        // 查询活跃订单
         async function queryOrders() {
             if (!contract || !accounts) return alert("请先连接 MetaMask！");
             const tokenFilter = document.getElementById('tokenFilterSelect').getAttribute('data-value');
@@ -761,10 +1344,9 @@
             }
             const activeOrdersDiv = document.getElementById('activeOrders').querySelector('.active-order-grid');
             const activeOrders = await contract.methods.getActiveOrders(tokenFilter, 0, 50).call();
-            const sortedOrders = activeOrders.filter(order => order.isActive).sort((a, b) => (a.amountOKB / a.amountIn) - (b.amountOKB / b.amountIn));
-            activeOrdersDiv.innerHTML = sortedOrders.length ? '' : '<p>此代币暂无活跃订单。</p>';
-            sortedOrders.forEach(order => {
-                const token = tokens[order.tokenIn] || {symbol: "未知", logo: "", priceDecimals: 6};
+            activeOrdersDiv.innerHTML = activeOrders.length ? '' : '<p>此代币暂无活跃订单。</p>';
+            activeOrders.forEach(order => {
+                const token = knownTokens[order.tokenIn] || {symbol: "未知", logo: "", priceDecimals: 6};
                 const amountIn = web3.utils.fromWei(order.amountIn, 'ether');
                 const amountOKB = web3.utils.fromWei(order.amountOKB, 'ether');
                 const price = amountIn > 0 ? (Number(amountOKB) / Number(amountIn)).toFixed(token.priceDecimals) : 0;
@@ -781,7 +1363,6 @@
             });
         }
 
-        // 复制合约地址
         function copyContractAddress() {
             const status = document.getElementById('networkStatus');
             const contractAddressElement = document.querySelector('#about .contract-short');
@@ -806,7 +1387,6 @@
             });
         }
 
-        // 设置自定义选择框
         function setupCustomSelect(selectId) {
             const select = document.getElementById(selectId);
             const selected = select.querySelector('.select-selected');
@@ -835,7 +1415,6 @@
             });
         }
 
-        // 移动端菜单
         function setupMobileMenu() {
             const menuToggle = document.querySelector('.menu-toggle');
             const mobileMenu = document.getElementById('mobile-menu');
@@ -847,7 +1426,6 @@
             }
         }
 
-        // 平滑滚动
         function setupSmoothScroll() {
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', (e) => {
@@ -863,7 +1441,6 @@
             });
         }
 
-        // 初始化事件监听
         document.addEventListener('DOMContentLoaded', () => {
             setupCustomSelect('tokenInSelect');
             setupCustomSelect('tokenFilterSelect');
@@ -876,6 +1453,7 @@
             document.getElementById('amountInInput').addEventListener('input', updatePrice);
             document.getElementById('amountOKBInput').addEventListener('input', updatePrice);
             document.getElementById('copyContractAddressButton').addEventListener('click', copyContractAddress);
+            document.getElementById('withdrawFeesButton').addEventListener('click', withdrawFees);
 
             if (!window.location.protocol.startsWith('http')) {
                 document.getElementById('networkStatus').innerHTML = '请通过本地服务器运行此页面（例如，"npx serve"）以连接 MetaMask。';
@@ -884,7 +1462,6 @@
             }
         });
 
-        // 监听网络和账户变化
         window.ethereum?.on('chainChanged', (chainId) => {
             if (parseInt(chainId, 16) !== 196) {
                 document.getElementById('networkStatus').innerText = "网络错误。请重新连接到 X Layer。";
